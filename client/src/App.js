@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./styles.css";
+import 'semantic-ui-css/semantic.min.css'
+import MainPage from "./containers/MainPage";
 
 class App extends React.Component {
   fetchTest = async ()=>{
@@ -8,10 +9,7 @@ class App extends React.Component {
   }
   render() {
     return (
-      <div>
-        <h1>This is testytree App</h1>
-        <button onClick={this.fetchTest}>Click</button>
-      </div>
+     <MainPage />
     );
   }
 }

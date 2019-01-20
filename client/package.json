@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint \"**/*.{js,jsx}\"",
     "dev": "parcel src/index.html",
-    "build": "parcel build --public-url ./dist src/index.html"
+    "build": "parcel build --public-url ./dist --experimental-scope-hoisting src/index.html"
   },
   "keywords": [],
   "author": "",
@@ -15,15 +15,19 @@
     "@babel/core": "^7.0.0-0",
     "@babel/plugin-proposal-class-properties": "^7.2.3",
     "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/preset-react": "^7.0.0",      
+    "@babel/preset-react": "^7.0.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "parcel-bundler": "^1.10.3"
   },
-  "dependencies": {   
+  "dependencies": {
+    "babel-plugin-lodash": "^3.3.4",
+    "babel-regenerator-runtime": "^6.5.0",
     "react": "^16.6.3",
-    "react-dom": "^16.6.3"
-  },  
+    "react-dom": "^16.6.3",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.84.0"
+  },
   "babel": {
     "presets": [
       "@babel/preset-env",
@@ -31,7 +35,7 @@
     ],
     "plugins": [
       "@babel/plugin-proposal-class-properties",
-      "@babel/plugin-transform-runtime"
+      "@babel/plugin-transform-runtime"     
     ]
   }
 }

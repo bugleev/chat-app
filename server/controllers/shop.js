@@ -32,6 +32,9 @@ exports.getProduct = (req, res, next) => {
 exports.getIndex = (req, res, next) => {
   res.send("from server");
 };
+exports.getTest = (req, res, next) => {
+  res.send("from test!");
+};
 
 exports.getCart = (req, res, next) => {
   req.user
