@@ -1,0 +1,28 @@
+.container 
+  margin: 0 auto
+  width: calc(100% - 100px)
+  height: 500px
+  display: flex
+  justify-content: space-around
+  align-items: center  
+  button
+    outline: none
+    border: none
+    padding: 0.5rem
+    color: blue
+  button:hover   
+    color: lighten(blue, 25%)
+
+.left
+  border: 2px solid blue
+  display: flex
+  width: 50%
+  height: 50%
+  flex-direction: column
+  justify-content: space-between
+  span 
+    margin: 0 auto
+.right
+  composes: left
+  border: 2px solid red
+ 
