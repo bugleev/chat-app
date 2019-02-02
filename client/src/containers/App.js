@@ -1,6 +1,6 @@
 import React, { Component, Suspense } from 'react'
 import Body from '../components/Body';
-import styles from '../styles/styles.module.sass';
+
 
 function lazyWithPreload(factory) {
   const Component = React.lazy(factory);
@@ -13,9 +13,9 @@ export default class App extends Component {
   state = {
     showFooter: false
   }
-  componentDidUpdate(prevProps){
+  componentDidUpdate(prevProps) {
     console.log("app update", prevProps, this.props);
-    
+
   }
   handleCLick = () => {
     setTimeout(() => this.setState({ showFooter: !this.state.showFooter }), 50)

@@ -4,6 +4,7 @@ import LeftModule from './LeftModule';
 import RightModule from './RightModule';
 import { observer } from "mobx-react";
 import { fetchStatus } from "../AppState/fetchStatus";
+import ChatMain from './ChatMain';
 @observer
 export default class Body extends Component {
   componentDidUpdate(prevProps) {
@@ -13,11 +14,7 @@ export default class Body extends Component {
   render() {
     const { isFetching, showSuccessMessage, errorMessage } = fetchStatus;
     return (
-      <div className={container}>
-        <h1>{isFetching && "loading"}{showSuccessMessage}{errorMessage}</h1>
-        <LeftModule />
-        <RightModule />
-      </div>
+      <ChatMain />
     )
   }
 }
