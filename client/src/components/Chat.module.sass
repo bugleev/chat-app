@@ -72,6 +72,9 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
     background: linear-gradient(#cc5333, #23074d)
 
 .chatWrapper  
+  display: flex
+  align-items: center
+  justify-content: center
   border-radius: 5px
   width: calc(100vw - 50%)
   min-width: 500px
@@ -81,11 +84,12 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
 
 .chatContent
   height: 100%
-  padding: 2rem 0 1rem
-  display: flex 
-  flex-direction: column
+  padding: 1rem 0 0 0
+  display: grid
+  grid-template-columns: 1fr auto  
   justify-content: space-between
 .chatList
+  margin-bottom: 1rem
   display: flex 
   flex-direction: column
   overflow-y: scroll
@@ -93,7 +97,7 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
 +custom-scroll("chatList")
 .chatLineMessage 
   font-size: 1.4rem
-  padding: 0.5rem 2rem
+  padding: 0 0.5rem
   word-wrap: break-word
   vertical-align: baseline
   .timeStamp
@@ -104,10 +108,23 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
     font-weight: bold
     color: $secondary    
   .message
-    font-size: 1.6rem    
+    font-size: 1.6rem
+.chatUsers
+  width: 80px
+  font-size: 1.4rem
+  display: flex
+  flex-direction: column
+  align-items: center
+  .chatUsersHeader
+    background: lighten($primary, 25%) 
+    width: 96%
+    text-align: center 
+  ul    
+    list-style: none
+    padding: 0
+    margin: 0       
 .chatInputBox     
-  width: 100%
-  padding: 0 2rem
+  width: 100%  
   >div 
     width: 100%
   textarea
