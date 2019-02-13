@@ -30,10 +30,10 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
       scrollbar-color: $primary #F5F5F5
 
 @font-face
-  font-family: 'utkonos'
+  font-family: 'chat'
   font-style: normal
   font-weight: 400
-  src: local('utkonos'), local('utkonos-regular'), url(../assets/Utkonos-Regular.woff2) format('woff2') 
+  src: local('chat'), local('Chat-font'), url(../assets/Chat-font.woff2) format('woff2') 
   
   
 \:global 
@@ -52,45 +52,62 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
     padding: 0
     font-size: 10px
     height: 100%    
-    background: linear-gradient(to right, #F3F9A7, #CAC531); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */        
+    background: linear-gradient(to right, #F3F9A7, #CAC531) /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */        
   body 
     font-size: 1.6rem
-    font-family: 'utkonos'    
+    font-family: 'chat'    
 
-.container 
-  display: flex
-  padding: 2rem
-  flex-direction: column
-  justify-content: center
-  align-items: center
-  h2 
-    text-align: center
-    text-transform: uppercase
-    transform: skew(0, -3deg)
-    font-size: 6rem
-    color: #fefefe      
-    background: linear-gradient(#cc5333, #23074d)
+.container
+  >div 
+    display: flex
+    padding: 2rem
+    flex-direction: column
+    justify-content: center
+    align-items: center
+h2 
+  text-align: center
+  text-transform: uppercase
+  transform: skew(0, -3deg)
+  font-size: 6rem
+  color: #fefefe      
+  background: linear-gradient(#cc5333, #23074d)
 
+.loginWrapper  
+  border-radius: 5px
+  margin-top: 7rem
+  width: calc(100vw - 50%)
+  height: calc(100vh - 280px)
+  min-width: 500px 
+  background-color: $primary
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)
 .chatWrapper  
-  display: flex
+  display: grid
+  grid-template-columns: 1fr auto
   align-items: center
   justify-content: center
   border-radius: 5px
   width: calc(100vw - 50%)
-  min-width: 500px
-  height: calc(100vh - 250px)
+  min-width: 500px 
   background-color: #faf9fa
-  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)
-
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)   
+.currentRoom
+  align-self: flex-start
+  justify-self: center
+  font-size: 1.4rem
+  background: lighten($primary, 25%)   
+  padding: 0 0.5rem 
 .chatContent
-  height: 100%
+  height: calc(100vh - 250px)
   padding: 1rem 0 0 0
   display: grid
-  grid-template-columns: 1fr auto  
+  grid-template-columns: 1fr auto
+  grid-template-rows: 30px 1fr 
   justify-content: space-between
 .chatList
   margin-bottom: 1rem
-  display: flex 
+  display: flex
+  grid-row: 2
+  min-height: 0px 
   flex-direction: column
   overflow-y: scroll
   overflow-x: hidden
@@ -102,6 +119,7 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
   vertical-align: baseline
   .timeStamp
     margin-right: 0.5rem
+    text-decoration: underline
     color: darken($secondary, 35%)
   .userName
     font-size: 1.6rem
@@ -113,22 +131,23 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
   width: 80px
   font-size: 1.4rem
   display: flex
+  grid-row: span 2 / 3
   flex-direction: column
   align-items: center
   .chatUsersHeader
     background: lighten($primary, 25%) 
-    width: 96%
-    text-align: center 
+    width: 85%
+    text-align: center
+    margin-bottom: 1rem 
   ul    
     list-style: none
     padding: 0
     margin: 0       
-.chatInputBox     
-  width: 100%  
+.chatInputBox      
   >div 
     width: 100%
   textarea
-    font-family: "utkonos"
+    font-family: "chat"
     font-weight: bold    
     width: 100%
     height: 6rem
@@ -167,4 +186,25 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
     border: 1px solid transparent
     border-radius: 4px
   button:hover 
-    background: $pr_hover  
+    background: $pr_hover
+     
+.menuWrapper
+  display: flex
+  flex-direction: column
+  align-items: center
+  width: 100px
+  height: 100%
+  justify-content: stretch
+  margin-right: 10px
+  >a 
+    flex-grow: 1
+    display: flex 
+    align-items: center
+    justify-content: center
+    width: 100%
+    text-align: center
+    color: #fff
+    text-decoration: none
+    background-color: darken($primary, 15%)
+  >a:hover
+    background-color: $pr_hover      

@@ -12,6 +12,11 @@ module.exports = () => {
       chunkFilename: 'static/js/[name].chunk.js',
       publicPath: publicPath
     },
+    devServer: {
+      historyApiFallback: true,
+      inline: true,
+      hot: true
+    },
     plugins: [
       new webpack.HotModuleReplacementPlugin(),
       new CaseSensitivePathsPlugin()

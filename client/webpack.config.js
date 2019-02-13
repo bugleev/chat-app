@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('./build-utils/plugins/InlineChunkHtmlPlugin');
 const getCSSModuleLocalIdent = require('./build-utils/plugins/getCSSModuleLocalIdent');
+const InterpolateHtmlPlugin = require('./build-utils/plugins/InterpolateHtmlPlugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 const webpackMerge = require("webpack-merge");
@@ -179,8 +180,8 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
                       },
                     ],
                     "@babel/plugin-syntax-dynamic-import",
-                    ["@babel/plugin-proposal-decorators", { "legacy": true } ],
-                    ["@babel/plugin-proposal-class-properties", { "loose": true } ],                   
+                    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+                    ["@babel/plugin-proposal-class-properties", { "loose": true }],
                   ],
                   // This is a feature of `babel-loader` for webpack (not Babel itself).
                   // It enables caching results in ./node_modules/.cache/babel-loader/
@@ -304,6 +305,7 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
             {
               inject: true,
               template: paths.appHtml,
+              favicon: "./public/favicon.png",
             },
             isEnvProduction
               ? {
@@ -324,6 +326,7 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
           )
         ),
         new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
+        new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
         new webpack.DefinePlugin(env.stringified),
       ].filter(Boolean),
       // Some libraries import Node modules but don't use them in the browser.
