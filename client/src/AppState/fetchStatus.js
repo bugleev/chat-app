@@ -15,14 +15,14 @@ class FetchStatus {
     this.isFetching = true;
     this.fetchSuccess = false;
     this.errorMessage = "";
-  }
+  };
   @action
   fetchStop = () => {
     this.isFetching = false;
     this.fetchSuccess = true;
-  }
+  };
   @action
-  fetchAndVerifyResponse = flow(function* (request) {
+  fetchAndVerifyResponse = flow(function*(request) {
     try {
       const response = yield fetch(request);
       if (!response.ok) {
@@ -35,19 +35,21 @@ class FetchStatus {
         return response;
       }
     } catch (error) {
-      this.fetchError(`Ошибка сети! Нет соединения с сервером. Message: ${error.message}`);
+      this.fetchError(
+        `Ошибка сети! Нет соединения с сервером. Message: ${error.message}`
+      );
     }
-  })
+  });
   @action
-  fetchError = (text) => {
+  fetchError = text => {
     this.isFetching = false;
     this.fetchSuccess = false;
     this.errorMessage = text;
-  }
+  };
 
   @computed
   get showSuccessMessage() {
-    return this.fetchSuccess ? "Успешно" : null
+    return this.fetchSuccess ? "Успешно" : null;
   }
   @action
   runWithTryCatch = (
@@ -61,7 +63,7 @@ class FetchStatus {
       this.fetchError(`${message}. \n Текст ошибки: ${error}`);
     }
     return null;
-  }
+  };
 }
 
 export const fetchStatus = new FetchStatus();

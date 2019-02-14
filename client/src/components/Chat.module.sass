@@ -2,6 +2,8 @@ $primary: #cc5333
 $text: #433f4a
 $pr_hover: lighten($primary, 10%)
 $secondary: #23074d
+$sec_hover: lighten($secondary, 10%)
+$white: #faf9fa
 
 $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-small": 640px, "tablet": 768px, "tablet-wide": 1024px, "desktop": 1280px, "desktop-wide": 1440px, "desktop-max": 1900px,)
 
@@ -64,31 +66,122 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
     flex-direction: column
     justify-content: center
     align-items: center
-h2 
+h2,h3 
+  padding: 0 1rem
   text-align: center
   text-transform: uppercase
   transform: skew(0, -3deg)
   font-size: 6rem
   color: #fefefe      
   background: linear-gradient(#cc5333, #23074d)
+h3   
+  color: $secondary
+  background: linear-gradient(#F3F9A7, #CAC531)
+  margin-bottom: 3rem 
 
+.chatButton 
+  padding: 0.4rem 1.8rem
+  display: flex
+  justify-content: center
+  align-items: center   
+  font-size: 1.4rem
+  line-height: 2rem
+  outline: none   
+  text-decoration: none
+  user-select: none
+  cursor: pointer
+  white-space: nowrap
+  background: $primary
+  color: #fff
+  border: 1px solid transparent
+  border-radius: 4px
+.chatButton:hover 
+  background: $pr_hover
+.loginButton   
+  composes: chatButton
+  background: $secondary
+.loginButton:hover
+  background: $sec_hover      
+.hidden
+  visibility: hidden
 .loginWrapper  
-  border-radius: 5px
-  margin-top: 7rem
+  border-radius: 5px 
   width: calc(100vw - 50%)
   height: calc(100vh - 280px)
+  display: flex
+  flex-direction: column 
+  align-items: center
   min-width: 500px 
   background-color: $primary
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)
+  form 
+    display: flex 
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    padding: 1rem
+    .formField
+      display: flex
+      align-items: center
+      position: relative      
+      width: 220px
+      margin-bottom: 2rem
+      span 
+        position: absolute
+        left: 8px
+        margin-top: 2px    
+      input
+        border: 2px solid $primary
+        width: 100%
+        padding: 1rem
+        padding-left: 2.5rem
+        background: $white
+        border-radius: 8px
+        font-family: "chat"
+        font-weight: bold
+        transition: box-shadow .1s ease-in,border .1s ease-in
+      input:focus 
+        border: 2px solid $secondary
+        box-shadow: 0 0 6px -2px $primary
+        outline: none
+    .formField.error
+      input
+        border: 2px solid #ff8181        
+        background: #fbcfcf       
+      input:focus 
+        border: 2px solid #ff8181
+        background: #fbcfcf
+        outline: none 
+      ::placeholder, span
+        color: #ff8181   
+  .formErrorWrapper   
+    margin-top: 2rem
+    padding: 0 1rem
+    background: #fbcfcf
+    border: 2px solid #ff8181
+    border-radius: 5px
+    font-size: 1.4rem
+    color: #ab5656
+    ul 
+      padding-left: 2rem
+  .sighupMessage
+    padding: 1rem
+    background: $white
+    border: 1px solid $secondary
+    border-radius: 5px
+    font-size: 1.4rem
+    color: $text
+    a 
+      font-weight: bold
 .chatWrapper  
   display: grid
-  grid-template-columns: 1fr auto
+  grid-template-columns: auto 1fr
   align-items: center
   justify-content: center
   border-radius: 5px
   width: calc(100vw - 50%)
   min-width: 500px 
-  background-color: #faf9fa
+  background-color: $white
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)   
 .currentRoom
   align-self: flex-start
@@ -98,7 +191,7 @@ h2
   padding: 0 0.5rem 
 .chatContent
   height: calc(100vh - 250px)
-  padding: 1rem 0 0 0
+  padding: 1rem 0 0 1rem
   display: grid
   grid-template-columns: 1fr auto
   grid-template-rows: 30px 1fr 
@@ -169,33 +262,35 @@ h2
   display: flex
   padding: 1rem 0
   justify-content: center
-  button 
-    padding: 0.4rem 1.8rem
-    display: flex
-    justify-content: center
-    align-items: center   
-    font-size: 1.4rem
-    line-height: 2rem
-    outline: none   
-    text-decoration: none
-    user-select: none
-    cursor: pointer
-    white-space: nowrap
-    background: $primary
-    color: #fff
-    border: 1px solid transparent
-    border-radius: 4px
-  button:hover 
-    background: $pr_hover
-     
+.roomList  
+  height: calc(100vh - 250px)
+  padding: 1rem 1rem 0 1rem
+  ul
+    padding: 0 
+    li 
+      padding: 0
+      margin: 0
+      margin-bottom: 1rem
+      display: flex
+      align-items: center
+      list-style: none
+      background: $pr_hover
+      height: 50px
+      justify-content: center
+      font-weight: bold
+      color: $text
+      cursor: pointer
+      a 
+        text-decoration: none
+        color: inherit
++custom-scroll("chatList")   
 .menuWrapper
   display: flex
   flex-direction: column
   align-items: center
   width: 100px
   height: 100%
-  justify-content: stretch
-  margin-right: 10px
+  justify-content: stretch 
   >a 
     flex-grow: 1
     display: flex 
@@ -207,4 +302,8 @@ h2
     text-decoration: none
     background-color: darken($primary, 15%)
   >a:hover
-    background-color: $pr_hover      
+    background-color: $pr_hover
+  >a:first-child
+    border-radius: 5px 0 0 0         
+  >a:last-child
+    border-radius: 0 0 0 5px        

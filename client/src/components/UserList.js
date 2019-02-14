@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
 import chatStyles from "./Chat.module.sass";
 
 export default class UserList extends Component {
@@ -10,6 +10,6 @@ export default class UserList extends Component {
           <li>User 1</li>
         </ul>
       </div>
-    )
+    );
   }
 }
