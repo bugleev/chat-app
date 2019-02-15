@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "@reach/router";
 import chatStyles from "./Chat.module.sass";
+import RoomList from "./RoomList";
 
 export default class MenuModule extends Component {
   render() {
@@ -12,24 +13,18 @@ export default class MenuModule extends Component {
       </Link>
     );
     return (
-      <nav className={chatStyles.menuWrapper}>
-        <Link to="/login">
-          <span>Login</span>
-        </Link>
-        <Link to="/signup">
-          <span>SignUp</span>
-        </Link>
-        {pathNames.length && pathNames[0] === "rooms" ? (
-          linkBack
-        ) : (
-          <Link to="/rooms">
-            <span>Change Room</span>
-          </Link>
-        )}
-        <a href="/">
-          <span>Logout</span>
-        </a>
-      </nav>
+      <div className={chatStyles.menuWrapper}>
+        <div className={chatStyles.accountInfo}>
+          <div className={chatStyles.userCircle} />
+          <div className={chatStyles.accountText}>
+            <span>Username</span>
+            <Link to="/">
+              <span>Sign out</span>
+            </Link>
+          </div>
+        </div>
+        <RoomList />
+      </div>
     );
   }
 }

@@ -4,7 +4,7 @@ import chatStyles from "./Chat.module.sass";
 import ChatBody from "./ChatBody";
 import MenuModule from "./MenuModule";
 import LoginModule from "./LoginModule";
-import RoomList from "./RoomList";
+import AddRoomForm from "./AddRoomForm";
 
 const UnmatchedRoute = () => <Redirect to="/" noThrow />;
 const ChatModule = () => (
@@ -14,7 +14,7 @@ const ChatModule = () => (
       <Location>{props => <MenuModule router={props} />}</Location>
       <Router>
         <ChatBody path="/" />
-        <RoomList path="rooms" />
+        <AddRoomForm path="rooms/add" />
         <UnmatchedRoute default />
       </Router>
     </div>
