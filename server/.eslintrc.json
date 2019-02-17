@@ -1,17 +1,11 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:import/errors",
-    "prettier"
-  ],
+  "extends": ["eslint:recommended", "plugin:import/errors", "prettier"],
   "rules": {
     "no-console": "off",
+    "no-unused-vars": "warn",
     "prettier/prettier": "error"
   },
-  "plugins": [
-    "prettier",
-    "import"
-  ],
+  "plugins": ["prettier", "import"],
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 2018,

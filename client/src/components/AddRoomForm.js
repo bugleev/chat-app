@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "@reach/router";
-import chatStyles from "./Chat.module.sass";
+import chatStyles from "../styles/Chat.module.sass";
 
 export default class AddRoomForm extends Component {
   render() {
@@ -8,7 +8,7 @@ export default class AddRoomForm extends Component {
     return (
       <div className={chatStyles.addRoomWrapper}>
         <h5>Create your own room</h5>
-        <form action="">
+        <form action="POST">
           <div
             className={`${chatStyles.formField} ${
               showError ? chatStyles.error : ""

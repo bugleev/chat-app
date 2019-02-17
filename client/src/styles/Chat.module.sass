@@ -84,7 +84,8 @@ h3, h4
   color: $secondary
   background: linear-gradient(#F3F9A7, #CAC531)
   margin-bottom: 3rem 
-
+h2 
+  margin-top: 2rem
 .chatButton 
   padding: 0.4rem 1.8rem
   display: flex
@@ -119,15 +120,19 @@ h3, h4
 .hidden
   visibility: hidden
 .loginWrapper  
-  border-radius: 5px 
+  border-radius: 5px
+  padding-bottom: 2rem 
   width: calc(100vw - 50%)
-  height: calc(100vh - 280px)
+  min-height: calc(100vh - 280px)
   display: flex
   flex-direction: column 
   align-items: center
   min-width: 500px 
   background-color: $primary
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)
+  h4 
+    margin-bottom: 1rem
+  
 form 
   display: flex 
   flex-direction: column
@@ -183,10 +188,12 @@ form
   background: $white
   border: 1px solid $secondary
   border-radius: 5px
-  font-size: 1.4rem
+  font-size: 1.2rem
   color: $text
   a 
     font-weight: bold
+  a:hover 
+    text-decoration: underline 
 .chatWrapper  
   display: grid
   grid-template-columns: auto 1fr

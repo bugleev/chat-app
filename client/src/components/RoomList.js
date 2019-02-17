@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import chatStyles from "./Chat.module.sass";
+import chatStyles from "../styles/Chat.module.sass";
 import { Link } from "@reach/router";
 
 export default class RoomList extends Component {
@@ -13,13 +13,21 @@ export default class RoomList extends Component {
               <li>
                 <Link to={`/room/${1}`}>Room 1</Link>
               </li>
-              <li>Room 2</li>
-              <li>Room 3</li>
+              <li>
+                {" "}
+                <Link to={`/login`}>Login</Link>
+              </li>
+              <li>
+                {" "}
+                <Link to={`/signup`}>Signup</Link>
+              </li>
             </ul>
           </div>
-          <button className={chatStyles.addRoomButton}>
-            <Link to="/rooms/add">Add room</Link>
-          </button>
+
+          <Link to="/rooms/add">
+            {" "}
+            <button className={chatStyles.addRoomButton}>Add room </button>
+          </Link>
         </div>
       </React.Fragment>
     );

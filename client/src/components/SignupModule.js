@@ -1,31 +1,44 @@
 import React, { Component } from "react";
-import { MdLock, MdEmail } from "react-icons/md";
+import { MdLock, MdPerson, MdEmail } from "react-icons/md";
 import { observer } from "mobx-react";
 import { Link } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
 import { LoginState } from "../AppState/loginState";
 
 @observer
-class LoginModule extends Component {
+class SignupModule extends Component {
   loginState = new LoginState();
   render() {
     const loginState = this.loginState;
-    const formErrors = Object.keys(loginState.loginForm.$)
+    const formErrors = Object.keys(loginState.signupForm.$)
       .map(el => loginState[el].error)
       .filter(Boolean);
-    const showError = loginState.loginForm.error;
+    const showError = loginState.signupForm.error;
     return (
       <React.Fragment>
         <h2>Chat app</h2>
         <div className={chatStyles.loginWrapper}>
-          <h4 className="">Login</h4>
-          <h5>
-            Application is currently for registered users only, please login
-          </h5>
+          <h4 className="">Signup</h4>
+          <h5>Provide credentials and start chatting!</h5>
           <form
             action="POST"
-            onSubmit={e => loginState.onSubmit(e, "loginForm")}
+            onSubmit={e => loginState.onSubmit(e, "signupForm")}
           >
+            <div
+              className={`${chatStyles.formField} ${
+                loginState.username.error ? chatStyles.error : ""
+              }`}
+            >
+              <span>
+                <MdPerson />
+              </span>
+              <input
+                type="text"
+                value={loginState.username.value}
+                onChange={e => loginState.username.onChange(e.target.value)}
+                placeholder="username"
+              />
+            </div>
             <div
               className={`${chatStyles.formField} ${
                 loginState.email.error ? chatStyles.error : ""
@@ -43,7 +56,7 @@ class LoginModule extends Component {
             </div>
             <div
               className={`${chatStyles.formField} ${
-                loginState.loginPassword.error ? chatStyles.error : ""
+                loginState.signupPassword.error ? chatStyles.error : ""
               }`}
             >
               <span>
@@ -51,14 +64,14 @@ class LoginModule extends Component {
               </span>
               <input
                 type="text"
-                value={loginState.loginPassword.value}
+                value={loginState.signupPassword.value}
                 onChange={e =>
-                  loginState.loginPassword.onChange(e.target.value)
+                  loginState.signupPassword.onChange(e.target.value)
                 }
                 placeholder="password"
               />
             </div>
-            <button className={chatStyles.loginButton}>Log in</button>
+            <button className={chatStyles.loginButton}>Sign up</button>
             {showError ? (
               <div className={chatStyles.formErrorWrapper}>
                 <ul>
@@ -69,12 +82,9 @@ class LoginModule extends Component {
               </div>
             ) : null}
           </form>
-          <div className={chatStyles.sighupMessage}>
-            Don&apos;t have an account? <Link to="/signup">Sign Up</Link>
-          </div>
         </div>
       </React.Fragment>
     );
   }
 }
-export default LoginModule;
+export default SignupModule;

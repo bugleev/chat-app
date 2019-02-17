@@ -25,11 +25,14 @@ class FetchStatus {
   fetchAndVerifyResponse = flow(function*(request) {
     try {
       const response = yield fetch(request);
+      console.log("response:", response);
       if (!response.ok) {
         const error = yield response.json();
         process.env.NODE_ENV === "development" && console.log(error);
         this.fetchStop();
-        this.fetchError(`Status: ${error.status}. Message: ${error.message}`);
+        this.fetchError(
+          `Status: ${response.status}. Message: ${error.message}`
+        );
         return false;
       } else {
         return response;
@@ -42,6 +45,7 @@ class FetchStatus {
   });
   @action
   fetchError = text => {
+    console.log("text:", text);
     this.isFetching = false;
     this.fetchSuccess = false;
     this.errorMessage = text;

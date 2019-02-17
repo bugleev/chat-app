@@ -2,10 +2,10 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const session = require("express-session");
-const MongoDBStore = require("connect-mongodb-session")(session);
-const csrf = require("csurf");
-const flash = require("connect-flash");
+// const session = require("express-session");
+// const MongoDBStore = require("connect-mongodb-session")(session);
+// const csrf = require("csurf");
+// const flash = require("connect-flash");
 const errorController = require("./controllers/error");
 const authRoutes = require("./routes/auth");
 const User = require("./models/user");
@@ -14,8 +14,10 @@ require("dotenv").config();
 const app = express();
 const allowCrossDomain = function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, content-type, Accept"
+  );
   next();
 };
 app.use(allowCrossDomain);
@@ -42,10 +44,10 @@ app.use(bodyParser.json());
 
 // app.use(flash());
 
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  next();
-});
+// app.use((req, res, next) => {
+//   res.locals.isAuthenticated = req.session.isLoggedIn;
+//   next();
+// });
 
 // app.use((req, res, next) => {
 //   // throw new Error('Sync Dummy');

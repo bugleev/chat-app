@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "@reach/router";
-import chatStyles from "./Chat.module.sass";
+import chatStyles from "../styles/Chat.module.sass";
 import RoomList from "./RoomList";
 
 export default class MenuModule extends Component {

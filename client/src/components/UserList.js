@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import chatStyles from "./Chat.module.sass";
+import chatStyles from "../styles/Chat.module.sass";
 
 export default class UserList extends Component {
   render() {

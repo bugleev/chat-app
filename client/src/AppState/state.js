@@ -1,4 +1,5 @@
 import { observable, action, computed, flow } from "mobx";
+import { navigate } from "@reach/router";
 import { fetchStatus } from "./fetchStatus";
 import { ENDPOINT } from "../../config";
 
@@ -28,9 +29,10 @@ class ApplicationState {
     fetchStatus.fetchStop();
   });
   @action
-  loginUser = flow(function*(requestBody) {
+  signupUser = flow(function*(requestBody) {
+    console.log("requestBody:", requestBody);
     fetchStatus.startFetching();
-    let request = new Request(`${ENDPOINT}/login`, {
+    let request = new Request(`/api/signup`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -40,7 +42,11 @@ class ApplicationState {
     });
     const response = yield fetchStatus.fetchAndVerifyResponse(request);
     if (!response) return;
-    const data = yield response.text();
+    const data = yield response.json();
+    console.log("data:", data);
+    if (data.success) {
+      navigate(`${data.redirectUrl}`);
+    }
     fetchStatus.fetchStop();
   });
   @computed

@@ -5,7 +5,7 @@
   "author": "abugleev",
   "private": true,
   "scripts": {
-    "webpack-dev-server": "webpack-dev-server",
+    "webpack-dev-server": "webpack-dev-server --info=false",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
     "webpack": "webpack",
     "dev": "cross-env NODE_ENV=development npm run webpack-dev-server -- --env.mode development --watch",
@@ -64,6 +64,8 @@
   },
   "dependencies": {
     "@reach/router": "^1.2.1",
+    "@tanem/react-nprogress": "^1.0.15",
+    "formstate": "^1.0.2",
     "node-sass": "^4.11.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
