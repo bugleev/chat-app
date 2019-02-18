@@ -87,6 +87,7 @@ h3, h4
 h2 
   margin-top: 2rem
 .chatButton 
+  font-family: "chat"
   padding: 0.4rem 1.8rem
   display: flex
   justify-content: center
@@ -105,8 +106,12 @@ h2
 .chatButton:hover 
   background: $pr_hover
 .loginButton, .addRoomButton   
-  composes: chatButton
+  composes: chatButton  
+  width: 75px
+  height: 30px
   background: $secondary
+  >div 
+    display: flex
 .loginButton:hover, .addRoomButton:hover
   background: $sec_hover
 .cancelButton
@@ -120,6 +125,7 @@ h2
 .hidden
   visibility: hidden
 .loginWrapper  
+  position: relative
   border-radius: 5px
   padding-bottom: 2rem 
   width: calc(100vw - 50%)
@@ -132,7 +138,22 @@ h2
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)
   h4     
     margin: 5rem
-  
+.loginErrorWrapper
+  position: absolute
+  display: flex
+  align-items: center
+  justify-content: center
+  top: -40px
+  left: 0
+  width: calc(100vw - 50% - 5px)
+  min-width: 500px
+  height: 40px
+  background-color: #fbcfcf
+  color: #a53232
+  font-weight: bold
+  font-size: 1.4rem
+  border-radius: 5px
+
 form 
   display: flex 
   flex-direction: column
@@ -165,19 +186,19 @@ form
       outline: none
   .formField.error
     input
-      border: 2px solid #ff8181        
+      border: 2px solid #a53232        
       background: #fbcfcf       
     input:focus 
-      border: 2px solid #ff8181
+      border: 2px solid #a53232
       background: #fbcfcf
       outline: none 
     ::placeholder, span
-      color: #ff8181   
+      color: #a53232   
 .formErrorWrapper   
   margin-top: 2rem
   padding: 0 1rem
   background: #fbcfcf
-  border: 2px solid #ff8181
+  border: 2px solid #a53232
   border-radius: 5px
   font-size: 1.4rem
   color: #ab5656

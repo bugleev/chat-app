@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { MdLock, MdPerson, MdEmail } from "react-icons/md";
+import { BeatLoader } from "react-spinners";
 import { observer } from "mobx-react";
 import { Link } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
 import { LoginState } from "../AppState/loginState";
+import { fetchStatus } from "../AppState/fetchStatus";
 
 @observer
 class SignupModule extends Component {
@@ -18,6 +20,11 @@ class SignupModule extends Component {
       <React.Fragment>
         <h2 />
         <div className={chatStyles.loginWrapper}>
+          {fetchStatus.errorMessage ? (
+            <div className={chatStyles.loginErrorWrapper}>
+              {fetchStatus.errorMessage}
+            </div>
+          ) : null}
           <h4 className="">Signup</h4>
           <h5>Provide credentials and start chatting!</h5>
           <form
@@ -63,7 +70,7 @@ class SignupModule extends Component {
                 <MdLock />
               </span>
               <input
-                type="text"
+                type="password"
                 value={loginState.signupPassword.value}
                 onChange={e =>
                   loginState.signupPassword.onChange(e.target.value)
@@ -71,7 +78,24 @@ class SignupModule extends Component {
                 placeholder="password"
               />
             </div>
-            <button className={chatStyles.loginButton}>Sign up</button>
+            <button
+              className={chatStyles.loginButton}
+              style={{
+                background: fetchStatus.isFetching ? "#380b7c" : undefined
+              }}
+            >
+              {" "}
+              {fetchStatus.isFetching ? (
+                <BeatLoader
+                  sizeUnit={"px"}
+                  size={12}
+                  color={"#faf9fa"}
+                  loading={fetchStatus.isFetching}
+                />
+              ) : (
+                "Sign up"
+              )}
+            </button>
             {showError ? (
               <div className={chatStyles.formErrorWrapper}>
                 <ul>

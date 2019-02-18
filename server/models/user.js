@@ -17,7 +17,7 @@ const userSchema = new Schema({
   },
   registered: {
     type: Date,
-    default: new Date()
+    default: Date.now
   },
   resetToken: String,
   resetTokenExpiration: Date

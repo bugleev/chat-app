@@ -102,6 +102,7 @@ class ApplicationState {
     localStorage.removeItem("token");
     localStorage.removeItem("expiryDate");
     localStorage.removeItem("userId");
+    navigate(`/login`);
   };
   @computed
   get postsFormatted() {

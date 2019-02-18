@@ -30,16 +30,14 @@ class FetchStatus {
         const error = yield response.json();
         process.env.NODE_ENV === "development" && console.log(error);
         this.fetchStop();
-        this.fetchError(
-          `Status: ${response.status}. Message: ${error.message}`
-        );
+        this.fetchError(`${error.message}`);
         return false;
       } else {
         return response;
       }
     } catch (error) {
       this.fetchError(
-        `Ошибка сети! Нет соединения с сервером. Message: ${error.message}`
+        `Network error! No server connection. Message: ${error.message}`
       );
     }
   });
@@ -53,18 +51,18 @@ class FetchStatus {
 
   @computed
   get showSuccessMessage() {
-    return this.fetchSuccess ? "Успешно" : null;
+    return this.fetchSuccess ? "Success" : null;
   }
   @action
   runWithTryCatch = (
     func,
     argsArr,
-    message = "Ошибка конвертации данных с сервера"
+    message = "Failed to convert data from the server"
   ) => {
     try {
       return func(...argsArr);
     } catch (error) {
-      this.fetchError(`${message}. \n Текст ошибки: ${error}`);
+      this.fetchError(`${message}. \n Error text: ${error}`);
     }
     return null;
   };

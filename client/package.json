@@ -69,6 +69,8 @@
     "node-sass": "^4.11.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-icons": "^3.4.0"
+    "react-icons": "^3.4.0",
+    "react-loader-spinner": "^2.3.0",
+    "react-spinners": "^0.5.1"
   }
 }

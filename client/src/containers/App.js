@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Router, Redirect, Location } from "@reach/router";
+import { Router, Redirect, Location, navigate } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
 import ChatBody from "../components/ChatBody";
 import MenuModule from "../components/MenuModule";
@@ -12,15 +12,21 @@ import { observer } from "mobx-react";
 const UnmatchedRoute = () => <Redirect to="/" noThrow />;
 const ChatModule = () => (
   <React.Fragment>
-    <h2 className={chatStyles.title} />
-    <div className={chatStyles.chatWrapper}>
-      <Location>{props => <MenuModule router={props} />}</Location>
-      <Router>
-        <ChatBody path="/" />
-        <AddRoomForm path="rooms/add" />
-        <UnmatchedRoute default />
-      </Router>
-    </div>
+    {appState.isAuth ? (
+      <React.Fragment>
+        <h2 className={chatStyles.title} />
+        <div className={chatStyles.chatWrapper}>
+          <Location>{props => <MenuModule router={props} />}</Location>
+          <Router>
+            <ChatBody path="/" />
+            <AddRoomForm path="rooms/add" />
+            <UnmatchedRoute default />
+          </Router>
+        </div>
+      </React.Fragment>
+    ) : (
+      <Redirect to="/login" noThrow />
+    )}
   </React.Fragment>
 );
 // eslint-disable-next-line
@@ -47,6 +53,7 @@ class App extends Component {
     appState.setLoginDetails({ token, id: userId });
     appState.setAutoLogout(remainingMilliseconds);
   }
+  componentDidUpdate() {}
   render() {
     return (
       <div className={chatStyles.container}>
