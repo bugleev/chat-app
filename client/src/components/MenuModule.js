@@ -2,8 +2,11 @@ import React, { Component } from "react";
 import { Link } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
 import RoomList from "./RoomList";
+import { observer } from "mobx-react";
+import { appState } from "../AppState/state";
 
-export default class MenuModule extends Component {
+@observer
+class MenuModule extends Component {
   render() {
     const path = this.props.router.location.pathname;
     let pathNames = path.split("/").filter(el => el.length);
@@ -17,10 +20,13 @@ export default class MenuModule extends Component {
         <div className={chatStyles.accountInfo}>
           <div className={chatStyles.userCircle} />
           <div className={chatStyles.accountText}>
-            <span>Username</span>
-            <Link to="/">
-              <span>Sign out</span>
-            </Link>
+            <span>{appState.userId}</span>
+            <button
+              onClick={appState.logoutHandler}
+              className={chatStyles.logOut}
+            >
+              Sign out
+            </button>
           </div>
         </div>
         <RoomList />
@@ -28,3 +34,5 @@ export default class MenuModule extends Component {
     );
   }
 }
+
+export default MenuModule;

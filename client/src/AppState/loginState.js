@@ -64,11 +64,18 @@ export class LoginState {
       return;
     }
     // Yay .. all good. Do what you want with it
-    appState.signupUser({
-      name: this.username.$,
-      email: this.email.$,
-      signupPassword: this.signupPassword.$
-    });
+    if (form === "signupForm") {
+      appState.signupUser({
+        name: this.username.$,
+        email: this.email.$,
+        password: this.signupPassword.$
+      });
+    } else {
+      appState.loginUser({
+        email: this.email.$,
+        password: this.loginPassword.$
+      });
+    }
     this.clearForm(); // Validated value!
   };
 }

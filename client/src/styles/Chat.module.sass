@@ -126,12 +126,12 @@ h2
   min-height: calc(100vh - 280px)
   display: flex
   flex-direction: column 
-  align-items: center
+  align-items: center  
   min-width: 500px 
   background-color: $primary
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)
-  h4 
-    margin-bottom: 1rem
+  h4     
+    margin: 5rem
   
 form 
   display: flex 
@@ -317,14 +317,23 @@ form
       position: relative
       color: $white
       >span 
+        width: 70px
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
         background: linear-gradient(to right, #f3f9a763 100%, rgb(232, 232, 232) 0%) 100% center / 100% 80% no-repeat
         background-position: 50% center
-      >a 
+      .logOut
+        font-family: "chat"
+        color: $white 
+        background: transparent 
+        border: none
         position: absolute
         top: 23px
         right: 0
         font-size: 1.1rem      
-      >a:hover      
+      .logOut:hover
+        cursor: pointer      
         font-weight: bold        
   .roomList
     flex-grow: 1

@@ -15,32 +15,20 @@ const app = express();
 const allowCrossDomain = function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, content-type, Accept"
+    "Access-Control-Allow-Methods",
+    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
   );
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 };
 app.use(allowCrossDomain);
 
-// const store = new MongoDBStore({
-//   uri: process.env.MONGO_DB,
-//   collection: "sessions"
-// });
 // const csrfProtection = csrf();
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // app.use(express.static(path.join(__dirname, "public")));
-
-// app.use(
-//   session({
-//     secret: "my secret",
-//     resave: false,
-//     saveUninitialized: false,
-//     store: store
-//   })
-// );
 
 // app.use(flash());
 
@@ -79,15 +67,17 @@ app.use(authRoutes);
 
 // app.use(errorController.get404);
 
-// app.use((error, req, res, next) => {
-//   // res.status(error.httpStatusCode).render(...);
-//   // res.redirect('/500');
-//   res.status(500).render("500", {
-//     pageTitle: "Error!",
-//     path: "/500",
-//     isAuthenticated: req.session.isLoggedIn
-//   });
-// });
+// handle server errors
+app.use((error, req, res, next) => {
+  const { statusCode = 500, message = "", data = [] } = error;
+  const details = data.length
+    ? ` Details: ${data.map(el => el.msg || "").join(" ")}`
+    : "";
+  res.status(statusCode).json({
+    message: `${message}${details}`
+  });
+});
+
 mongoose
   .connect(process.env.MONGO_DB, {
     useNewUrlParser: true

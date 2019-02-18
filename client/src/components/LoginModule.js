@@ -16,7 +16,7 @@ class LoginModule extends Component {
     const showError = loginState.loginForm.error;
     return (
       <React.Fragment>
-        <h2>Chat app</h2>
+        <h2 />
         <div className={chatStyles.loginWrapper}>
           <h4 className="">Login</h4>
           <h5>

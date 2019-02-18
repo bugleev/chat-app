@@ -1,36 +1,17 @@
 import { observable, action, computed, flow } from "mobx";
 import { navigate } from "@reach/router";
 import { fetchStatus } from "./fetchStatus";
-import { ENDPOINT } from "../../config";
 
 class ApplicationState {
-  constructor() {
-    this.fetchPosts = this.fetchPosts.bind(this);
-  }
   @observable
-  posts = [];
+  isAuth = false;
+  @observable
+  token = null;
+  @observable
+  userId = null;
 
   @action
-  clearPosts = () => {
-    this.posts = [];
-  };
-  @action
-  fetchPosts = flow(function*() {
-    this.clearPosts();
-    fetchStatus.startFetching();
-    const response = yield fetchStatus.fetchAndVerifyResponse(
-      "https://jsonplaceholder.typicode.com/posts"
-    );
-    if (!response) return;
-    const data = yield response.json();
-    const formatted = fetchStatus.runWithTryCatch(this.convertPosts, [data]);
-    if (!formatted) return;
-    this.posts = formatted;
-    fetchStatus.fetchStop();
-  });
-  @action
   signupUser = flow(function*(requestBody) {
-    console.log("requestBody:", requestBody);
     fetchStatus.startFetching();
     let request = new Request(`/api/signup`, {
       method: "POST",
@@ -44,11 +25,84 @@ class ApplicationState {
     if (!response) return;
     const data = yield response.json();
     console.log("data:", data);
-    if (data.success) {
-      navigate(`${data.redirectUrl}`);
-    }
     fetchStatus.fetchStop();
+    if (data.success) {
+      navigate(`/login`);
+    }
   });
+
+  // @action
+  // getTest = flow(
+  //   function*() {
+  //     fetchStatus.startFetching();
+  //     let request = new Request(`/api/test`, {
+  //       method: "GET",
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${this.token || ""}`
+  //       }
+  //     });
+  //     const response = yield fetchStatus.fetchAndVerifyResponse(request);
+  //     if (!response) return;
+  //     const data = yield response.json();
+  //     console.log("data:", data);
+  //     fetchStatus.fetchStop();
+  //     if (data.success) {
+  //       navigate(`/login`);
+  //     }
+  //   }.bind(this)
+  // );
+  @action
+  loginUser = flow(function*(requestBody) {
+    fetchStatus.startFetching();
+    let token = "test";
+    let request = new Request(`/api/login`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(requestBody)
+    });
+    const response = yield fetchStatus.fetchAndVerifyResponse(request);
+    if (!response) return;
+    const data = yield response.json();
+    console.log("data:", data.body);
+    fetchStatus.fetchStop();
+    if (data.success) {
+      localStorage.setItem("token", data.body.token);
+      localStorage.setItem("userId", data.body.id);
+      const remainingMilliseconds = 60 * 60 * 1000;
+      const expiryDate = new Date(new Date().getTime() + remainingMilliseconds);
+      localStorage.setItem("expiryDate", expiryDate.toISOString());
+      this.setAutoLogout(remainingMilliseconds);
+      this.setLoginDetails({ token: data.body.token, id: data.body.id });
+      navigate(`/`);
+    }
+  });
+  @action
+  setLoginDetails = ({ token, id }) => {
+    this.isAuth = true;
+    this.token = token;
+    this.userId = id;
+  };
+  @action
+  setAutoLogout = milliseconds => {
+    setTimeout(() => {
+      this.logoutHandler();
+    }, milliseconds);
+  };
+  @action
+  logoutHandler = () => {
+    this.isAuth = false;
+    this.token = null;
+    this.userId = null;
+    localStorage.removeItem("token");
+    localStorage.removeItem("expiryDate");
+    localStorage.removeItem("userId");
+  };
   @computed
   get postsFormatted() {
     return this.posts;

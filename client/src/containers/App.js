@@ -6,11 +6,13 @@ import MenuModule from "../components/MenuModule";
 import LoginModule from "../components/LoginModule";
 import AddRoomForm from "../components/AddRoomForm";
 import SignupModule from "../components/SignupModule";
+import { appState } from "../AppState/state";
+import { observer } from "mobx-react";
 
 const UnmatchedRoute = () => <Redirect to="/" noThrow />;
 const ChatModule = () => (
   <React.Fragment>
-    <h2 className={chatStyles.title}>Chat App</h2>
+    <h2 className={chatStyles.title} />
     <div className={chatStyles.chatWrapper}>
       <Location>{props => <MenuModule router={props} />}</Location>
       <Router>
@@ -27,7 +29,24 @@ const DefaultPage = () => (
     Default Page
   </div>
 );
-export default class App extends Component {
+@observer
+class App extends Component {
+  componentDidMount() {
+    const token = localStorage.getItem("token");
+    const expiryDate = localStorage.getItem("expiryDate");
+    if (!token || !expiryDate) {
+      return;
+    }
+    if (new Date(expiryDate) <= new Date()) {
+      appState.logoutHandler();
+      return;
+    }
+    const userId = localStorage.getItem("userId");
+    const remainingMilliseconds =
+      new Date(expiryDate).getTime() - new Date().getTime();
+    appState.setLoginDetails({ token, id: userId });
+    appState.setAutoLogout(remainingMilliseconds);
+  }
   render() {
     return (
       <div className={chatStyles.container}>
@@ -41,3 +60,5 @@ export default class App extends Component {
     );
   }
 }
+
+export default App;

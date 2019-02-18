@@ -17,6 +17,8 @@ module.exports = () => {
       historyApiFallback: true,
       inline: true,
       hot: true,
+      open: true,
+      overlay: true,
       clientLogLevel: "warning",
       proxy: {
         "/api": {
