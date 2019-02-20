@@ -1,5 +1,5 @@
 import { FormState, FieldState } from "formstate";
-import { appState } from "./state";
+import { authState } from "./authState";
 
 const required = fieldName => value => {
   const error = `${fieldName} required!`;
@@ -28,7 +28,7 @@ const anyUppercase = val =>
 const anyDigit = val =>
   !val.match(/\d/) && "password must contain at least one digit!";
 
-export class LoginState {
+export class formState {
   // Create a field
   username = new FieldState("").validators(required("username"));
   email = new FieldState("").validators(required("email"), email);
@@ -38,6 +38,13 @@ export class LoginState {
     anyUppercase,
     anyDigit
   );
+  resetPassword = new FieldState("").validators(
+    required("password"),
+    lengthCheck,
+    anyUppercase,
+    anyDigit
+  );
+  confirmResetPassword = new FieldState("").validators(required("password"));
   loginPassword = new FieldState("").validators(required("password"));
 
   // Compose fields into a form
@@ -49,6 +56,13 @@ export class LoginState {
     username: this.username,
     email: this.email,
     signupPassword: this.signupPassword
+  });
+  forgotPassForm = new FormState({
+    email: this.email
+  });
+  resetPassForm = new FormState({
+    resetPassword: this.resetPassword,
+    confirmResetPassword: this.confirmResetPassword
   });
 
   clearForm = () => {
@@ -64,17 +78,35 @@ export class LoginState {
       return;
     }
     // Yay .. all good. Do what you want with it
-    if (form === "signupForm") {
-      appState.signupUser({
-        name: this.username.$,
-        email: this.email.$,
-        password: this.signupPassword.$
-      });
-    } else {
-      appState.loginUser({
-        email: this.email.$,
-        password: this.loginPassword.$
-      });
+    switch (form) {
+      case "signupForm":
+        authState.signupUser({
+          name: this.username.$,
+          email: this.email.$,
+          password: this.signupPassword.$
+        });
+        break;
+      case "loginForm":
+        authState.loginUser({
+          email: this.email.$,
+          password: this.loginPassword.$
+        });
+        break;
+      case "forgotPassForm":
+        authState.requestPasswordReset({
+          email: this.email.$
+        });
+        break;
+      case "resetPassForm":
+        authState.resetPassword({
+          password: this.resetPassword.$,
+          confirmPassword: this.confirmResetPassword.$
+        });
+        break;
+
+      default:
+        this.clearForm();
+        break;
     }
     this.clearForm(); // Validated value!
   };

@@ -1,7 +1,11 @@
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator/check");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const sgMail = require("@sendgrid/mail");
 const User = require("../models/user");
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.signup = async (req, res, next) => {
   try {
@@ -51,6 +55,83 @@ exports.login = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       body: { token, id: userInDB._id.toString() }
+    });
+  } catch (err) {
+    err.statusCode = err.statusCode || 500;
+    next(err);
+  }
+};
+exports.sendResetToken = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const userInDB = await User.findOne({ email });
+    if (!userInDB) {
+      const error = new Error("No account with that email exists");
+      error.statusCode = 400;
+      throw error;
+    }
+    userInDB.resetToken = crypto.randomBytes(20).toString("hex");
+    userInDB.resetTokenExpires = Date.now() + 3600000;
+    await userInDB.save();
+    const resetURL = `http://${req.headers.host}/reset/${userInDB.resetToken}`;
+    await sgMail.send({
+      to: email,
+      from: "da-chat@dataart.com",
+      subject: "Password reset request",
+      html: `<h1>Follow the link to reset your password</h1> <a href=${resetURL}>Reset password</a>`,
+      text: "test example"
+    });
+    return res.status(200).json({
+      success: true,
+      body: { message: `Check your email!` }
+    });
+  } catch (err) {
+    err.statusCode = err.statusCode || 500;
+    next(err);
+  }
+};
+exports.verifyToken = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    const userInDB = await User.findOne({
+      resetToken: token,
+      resetTokenExpires: { $gt: Date.now() }
+    });
+    if (!userInDB) {
+      const error = new Error("Password reset token is invalid or has expired");
+      error.statusCode = 400;
+      throw error;
+    }
+    return res.status(200).json({
+      success: true,
+      body: { message: `You can reset your password!`, id: userInDB._id }
+    });
+  } catch (err) {
+    err.statusCode = err.statusCode || 500;
+    next(err);
+  }
+};
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { password, confirmPassword, userId } = req.body;
+    if (password !== confirmPassword) {
+      const error = new Error("Passwords don't match!");
+      error.statusCode = 400;
+      throw error;
+    }
+    const userInDB = await User.findById(userId);
+    if (!userInDB) {
+      const error = new Error("No user found!");
+      error.statusCode = 400;
+      throw error;
+    }
+    userInDB.password = await bcrypt.hash(password, 12);
+    userInDB.resetToken = undefined;
+    userInDB.resetTokenExpires = undefined;
+    await userInDB.save();
+    return res.status(200).json({
+      success: true,
+      body: { message: `Your password was reset!` }
     });
   } catch (err) {
     err.statusCode = err.statusCode || 500;

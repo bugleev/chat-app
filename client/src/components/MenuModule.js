@@ -3,7 +3,7 @@ import { Link } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
 import RoomList from "./RoomList";
 import { observer } from "mobx-react";
-import { appState } from "../AppState/state";
+import { authState } from "../AppState";
 
 @observer
 class MenuModule extends Component {
@@ -20,9 +20,9 @@ class MenuModule extends Component {
         <div className={chatStyles.accountInfo}>
           <div className={chatStyles.userCircle} />
           <div className={chatStyles.accountText}>
-            <span>{appState.userId}</span>
+            <span>{authState.userId}</span>
             <button
-              onClick={appState.logoutHandler}
+              onClick={authState.logoutHandler}
               className={chatStyles.logOut}
             >
               Sign out

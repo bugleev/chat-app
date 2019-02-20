@@ -1,6 +1,6 @@
 import { observable, action, computed, flow } from "mobx";
 
-class FetchStatus {
+class fetchStatus {
   constructor() {
     this.fetchAndVerifyResponse = this.fetchAndVerifyResponse.bind(this);
   }
@@ -68,4 +68,4 @@ class FetchStatus {
   };
 }
 
-export const fetchStatus = new FetchStatus();
+export const fetchState = new fetchStatus();

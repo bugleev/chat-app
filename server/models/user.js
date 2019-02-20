@@ -1,15 +1,19 @@
 const mongoose = require("mongoose");
 
+mongoose.set("useCreateIndex", true);
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
   username: {
     type: String,
-    required: true
+    required: "Please provide username",
+    trim: true
   },
   email: {
     type: String,
-    required: true
+    lowercase: true,
+    trim: true,
+    required: "Please provide an email"
   },
   password: {
     type: String,
@@ -20,7 +24,7 @@ const userSchema = new Schema({
     default: Date.now
   },
   resetToken: String,
-  resetTokenExpiration: Date
+  resetTokenExpires: Date
 });
 
 userSchema.methods.addToCart = function(product) {

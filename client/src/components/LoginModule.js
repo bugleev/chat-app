@@ -4,25 +4,24 @@ import { BeatLoader } from "react-spinners";
 import { observer } from "mobx-react";
 import { Link } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
-import { LoginState } from "../AppState/loginState";
-import { fetchStatus } from "../AppState/fetchStatus";
+import { formState, fetchState } from "../AppState";
 
 @observer
 class LoginModule extends Component {
-  loginState = new LoginState();
+  formState = new formState();
   render() {
-    const loginState = this.loginState;
-    const formErrors = Object.keys(loginState.loginForm.$)
-      .map(el => loginState[el].error)
+    const formState = this.formState;
+    const formErrors = Object.keys(formState.loginForm.$)
+      .map(el => formState[el].error)
       .filter(Boolean);
-    const showError = loginState.loginForm.error;
+    const showError = formState.loginForm.error;
     return (
       <React.Fragment>
         <h2>Chat app</h2>
         <div className={chatStyles.loginWrapper}>
-          {fetchStatus.errorMessage ? (
+          {fetchState.errorMessage ? (
             <div className={chatStyles.loginErrorWrapper}>
-              {fetchStatus.errorMessage}
+              {fetchState.errorMessage}
             </div>
           ) : null}
           <h4 className="">Login</h4>
@@ -31,11 +30,11 @@ class LoginModule extends Component {
           </h5>
           <form
             action="POST"
-            onSubmit={e => loginState.onSubmit(e, "loginForm")}
+            onSubmit={e => formState.onSubmit(e, "loginForm")}
           >
             <div
               className={`${chatStyles.formField} ${
-                loginState.email.error ? chatStyles.error : ""
+                formState.email.error ? chatStyles.error : ""
               }`}
             >
               <span>
@@ -43,14 +42,14 @@ class LoginModule extends Component {
               </span>
               <input
                 type="email"
-                value={loginState.email.value}
-                onChange={e => loginState.email.onChange(e.target.value)}
+                value={formState.email.value}
+                onChange={e => formState.email.onChange(e.target.value)}
                 placeholder="email"
               />
             </div>
             <div
               className={`${chatStyles.formField} ${
-                loginState.loginPassword.error ? chatStyles.error : ""
+                formState.loginPassword.error ? chatStyles.error : ""
               }`}
             >
               <span>
@@ -58,25 +57,27 @@ class LoginModule extends Component {
               </span>
               <input
                 type="password"
-                value={loginState.loginPassword.value}
-                onChange={e =>
-                  loginState.loginPassword.onChange(e.target.value)
-                }
+                value={formState.loginPassword.value}
+                onChange={e => formState.loginPassword.onChange(e.target.value)}
                 placeholder="password"
               />
+              <span className={chatStyles.forgotPassword}>
+                {" "}
+                <Link to="/reset">Forgot password?</Link>
+              </span>
             </div>
             <button
               className={chatStyles.loginButton}
               style={{
-                background: fetchStatus.isFetching ? "#380b7c" : undefined
+                background: fetchState.isFetching ? "#380b7c" : undefined
               }}
             >
-              {fetchStatus.isFetching ? (
+              {fetchState.isFetching ? (
                 <BeatLoader
                   sizeUnit={"px"}
                   size={12}
                   color={"#faf9fa"}
-                  loading={fetchStatus.isFetching}
+                  loading={fetchState.isFetching}
                 />
               ) : (
                 "Log in"

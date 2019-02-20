@@ -6,10 +6,11 @@ const mongoose = require("mongoose");
 // const MongoDBStore = require("connect-mongodb-session")(session);
 // const csrf = require("csurf");
 // const flash = require("connect-flash");
+require("dotenv").config();
+
 const errorController = require("./controllers/error");
 const authRoutes = require("./routes/auth");
 const User = require("./models/user");
-require("dotenv").config();
 
 const app = express();
 const allowCrossDomain = function(req, res, next) {

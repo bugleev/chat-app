@@ -4,36 +4,35 @@ import { BeatLoader } from "react-spinners";
 import { observer } from "mobx-react";
 import { Link } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
-import { LoginState } from "../AppState/loginState";
-import { fetchStatus } from "../AppState/fetchStatus";
+import { formState, fetchState } from "../AppState";
 
 @observer
 class SignupModule extends Component {
-  loginState = new LoginState();
+  formState = new formState();
   render() {
-    const loginState = this.loginState;
-    const formErrors = Object.keys(loginState.signupForm.$)
-      .map(el => loginState[el].error)
+    const formState = this.formState;
+    const formErrors = Object.keys(formState.signupForm.$)
+      .map(el => formState[el].error)
       .filter(Boolean);
-    const showError = loginState.signupForm.error;
+    const showError = formState.signupForm.error;
     return (
       <React.Fragment>
         <h2 />
         <div className={chatStyles.loginWrapper}>
-          {fetchStatus.errorMessage ? (
+          {fetchState.errorMessage ? (
             <div className={chatStyles.loginErrorWrapper}>
-              {fetchStatus.errorMessage}
+              {fetchState.errorMessage}
             </div>
           ) : null}
           <h4 className="">Signup</h4>
           <h5>Provide credentials and start chatting!</h5>
           <form
             action="POST"
-            onSubmit={e => loginState.onSubmit(e, "signupForm")}
+            onSubmit={e => formState.onSubmit(e, "signupForm")}
           >
             <div
               className={`${chatStyles.formField} ${
-                loginState.username.error ? chatStyles.error : ""
+                formState.username.error ? chatStyles.error : ""
               }`}
             >
               <span>
@@ -41,14 +40,14 @@ class SignupModule extends Component {
               </span>
               <input
                 type="text"
-                value={loginState.username.value}
-                onChange={e => loginState.username.onChange(e.target.value)}
+                value={formState.username.value}
+                onChange={e => formState.username.onChange(e.target.value)}
                 placeholder="username"
               />
             </div>
             <div
               className={`${chatStyles.formField} ${
-                loginState.email.error ? chatStyles.error : ""
+                formState.email.error ? chatStyles.error : ""
               }`}
             >
               <span>
@@ -56,14 +55,14 @@ class SignupModule extends Component {
               </span>
               <input
                 type="email"
-                value={loginState.email.value}
-                onChange={e => loginState.email.onChange(e.target.value)}
+                value={formState.email.value}
+                onChange={e => formState.email.onChange(e.target.value)}
                 placeholder="email"
               />
             </div>
             <div
               className={`${chatStyles.formField} ${
-                loginState.signupPassword.error ? chatStyles.error : ""
+                formState.signupPassword.error ? chatStyles.error : ""
               }`}
             >
               <span>
@@ -71,9 +70,9 @@ class SignupModule extends Component {
               </span>
               <input
                 type="password"
-                value={loginState.signupPassword.value}
+                value={formState.signupPassword.value}
                 onChange={e =>
-                  loginState.signupPassword.onChange(e.target.value)
+                  formState.signupPassword.onChange(e.target.value)
                 }
                 placeholder="password"
               />
@@ -81,16 +80,16 @@ class SignupModule extends Component {
             <button
               className={chatStyles.loginButton}
               style={{
-                background: fetchStatus.isFetching ? "#380b7c" : undefined
+                background: fetchState.isFetching ? "#380b7c" : undefined
               }}
             >
               {" "}
-              {fetchStatus.isFetching ? (
+              {fetchState.isFetching ? (
                 <BeatLoader
                   sizeUnit={"px"}
                   size={12}
                   color={"#faf9fa"}
-                  loading={fetchStatus.isFetching}
+                  loading={fetchState.isFetching}
                 />
               ) : (
                 "Sign up"
