@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Router, Redirect, Location, navigate } from "@reach/router";
 import { observer } from "mobx-react";
+
 import chatStyles from "../styles/Chat.module.sass";
 import ChatBody from "../components/ChatBody";
 import MenuModule from "../components/MenuModule";

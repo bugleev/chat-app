@@ -50,10 +50,11 @@ router.post(
       .not()
       .isEmpty()
       .isLength({ min: 6 }),
-    body("confirmPassword")
-      .trim()
-      .not()
-      .isEmpty()
+    body("confirmPassword").custom((val, { req }) => {
+      if (val !== req.body.password) {
+        throw new Error("Passwords don't match!");
+      }
+    })
   ],
   authController.resetPassword
 );

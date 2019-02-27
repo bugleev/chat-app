@@ -24,6 +24,10 @@ module.exports = () => {
         "/api": {
           target: ENDPOINT,
           pathRewrite: { "^/api": "" }
+        },
+        "/socket.io": {
+          target: ENDPOINT,
+          ws: true
         }
       }
     },

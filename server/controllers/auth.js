@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const sgMail = require("@sendgrid/mail");
 const User = require("../models/user");
+const io = require("../socketServer");
+
+// NOTE: all errors are forwarded by next() callback, to handle them all in the root(server.js)
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -33,6 +36,7 @@ exports.signup = async (req, res, next) => {
   }
 };
 exports.login = async (req, res, next) => {
+  // io.getServer().emit
   try {
     const { email, password } = req.body;
     const userInDB = await User.findOne({ email });
@@ -113,12 +117,7 @@ exports.verifyToken = async (req, res, next) => {
 };
 exports.resetPassword = async (req, res, next) => {
   try {
-    const { password, confirmPassword, userId } = req.body;
-    if (password !== confirmPassword) {
-      const error = new Error("Passwords don't match!");
-      error.statusCode = 400;
-      throw error;
-    }
+    const { password, userId } = req.body;
     const userInDB = await User.findById(userId);
     if (!userInDB) {
       const error = new Error("No user found!");
