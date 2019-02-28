@@ -54,11 +54,11 @@ exports.login = async (req, res, next) => {
         userId: userInDB._id.toString()
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "365d" }
     );
     return res.status(200).json({
       success: true,
-      body: { token, id: userInDB._id.toString() }
+      body: { token, id: userInDB._id.toString(), username: userInDB.username }
     });
   } catch (err) {
     err.statusCode = err.statusCode || 500;

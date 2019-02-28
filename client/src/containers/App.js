@@ -20,7 +20,7 @@ const ChatModule = () => (
         <div className={chatStyles.chatWrapper}>
           <Location>{props => <MenuModule router={props} />}</Location>
           <Router>
-            <ChatBody path="/" />
+            <ChatBody path="/*" />
             <AddRoomForm path="rooms/add" />
             <UnmatchedRoute default />
           </Router>

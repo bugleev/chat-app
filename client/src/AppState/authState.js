@@ -1,5 +1,6 @@
 import { observable, action, computed, flow } from "mobx";
 import { navigate } from "@reach/router";
+import { socketState } from "./socketState";
 import { fetchState } from "./fetchState";
 
 class AuthorizationState {
@@ -15,10 +16,13 @@ class AuthorizationState {
       return;
     }
     const userId = localStorage.getItem("userId");
+    const username = localStorage.getItem("username");
     const remainingMilliseconds =
       new Date(expiryDate).getTime() - new Date().getTime();
-    this.setLoginDetails({ token, id: userId });
+    this.setLoginDetails({ token, id: userId, username });
     this.setAutoLogout(remainingMilliseconds);
+    socketState.joinRoom("", this.username);
+    socketState.subscribe();
   }
   @observable
   isAuth = false;
@@ -26,6 +30,8 @@ class AuthorizationState {
   token = null;
   @observable
   userId = null;
+  @observable
+  username = null;
   @observable
   resetAllowed = false;
 
@@ -86,17 +92,24 @@ class AuthorizationState {
     const response = yield fetchState.fetchAndVerifyResponse(request);
     if (!response) return;
     const data = yield response.json();
-    console.log("data:", data.body);
     fetchState.fetchStop();
     if (data.success) {
       localStorage.setItem("token", data.body.token);
       localStorage.setItem("userId", data.body.id);
+      localStorage.setItem("username", data.body.username);
       const remainingMilliseconds = 60 * 60 * 1000;
-      const expiryDate = new Date(new Date().getTime() + remainingMilliseconds);
+      const expiryDate = new Date();
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
       localStorage.setItem("expiryDate", expiryDate.toISOString());
       this.setAutoLogout(remainingMilliseconds);
-      this.setLoginDetails({ token: data.body.token, id: data.body.id });
+      this.setLoginDetails({
+        token: data.body.token,
+        id: data.body.id,
+        username: data.body.username
+      });
       navigate(`/`);
+      socketState.joinRoom(null, this.username);
+      socketState.subscribe();
     }
   });
   @action
@@ -163,10 +176,11 @@ class AuthorizationState {
   });
 
   @action
-  setLoginDetails = ({ token, id }) => {
+  setLoginDetails = ({ token, id, username }) => {
     this.isAuth = true;
     this.token = token;
     this.userId = id;
+    this.username = username;
   };
   @action
   setAutoLogout = milliseconds => {
@@ -182,6 +196,7 @@ class AuthorizationState {
     localStorage.removeItem("token");
     localStorage.removeItem("expiryDate");
     localStorage.removeItem("userId");
+    localStorage.removeItem("username");
     navigate(`/login`);
   };
   @computed

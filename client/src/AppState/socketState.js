@@ -3,29 +3,76 @@ import openSocket from "socket.io-client";
 import { navigate } from "@reach/router";
 import { authState } from "./authState";
 
+const generateMessage = (from, room, message) => ({
+  created: Date.now(),
+  from,
+  room,
+  message: escapeHtml(message)
+});
+
+function escapeHtml(str) {
+  var div = document.createElement("div");
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+const DEFAULT_ROOM = "world";
 class SocketIOState {
   constructor() {
-    // get data from local storage on startup
     this.socket = openSocket("/");
-    if (authState.isAuth) this.joinRoom();
-    this.subscribe();
   }
-  @observable
   socket = null;
 
+  @observable
+  currentRoom = "";
+  @observable
+  roomMessages = [];
+  @observable
+  userList = [];
+
   @action
-  joinRoom = flow(
-    function*() {
-      yield this.socket.emit("join", "some text", () => {
-        console.log("joined from client!");
-      });
-    }.bind(this)
-  );
+  changeRoom = room => {
+    this.currentRoom = room;
+  };
+  @action
+  joinRoom = (room, name) => {
+    this.socket.emit(
+      "join",
+      {
+        from: name,
+        room: room || DEFAULT_ROOM
+      },
+      roomId => {
+        navigate(`/room/${roomId}`);
+        this.changeRoom(roomId);
+      }
+    );
+  };
+
+  @action
+  createMessage = message => {
+    this.socket.emit(
+      "createMessage",
+      generateMessage(authState.username, this.currentRoom, message)
+    );
+  };
+  @action
+  receiveMessage = data => {
+    this.roomMessages.push(data);
+  };
+  @action
+  updateUserList = list => {
+    this.userList = list;
+  };
 
   @action
   subscribe = () => {
     this.socket.on("newMessage", (data, cb) => {
       console.log(data);
+      this.receiveMessage(data);
+    });
+    this.socket.on("updateUserList", (data, cb) => {
+      console.log("data:", data);
+      this.updateUserList(data);
     });
     this.socket.on("Admin", (data, cb) => {
       console.log(data);

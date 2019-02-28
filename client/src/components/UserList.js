@@ -7,7 +7,9 @@ export default class UserList extends Component {
       <div className={chatStyles.chatUsers}>
         <div className={chatStyles.chatUsersHeader}>Online:</div>
         <ul>
-          <li>User 1</li>
+          {this.props.users.map(el => (
+            <li key={el}>{el}</li>
+          ))}
         </ul>
       </div>
     );

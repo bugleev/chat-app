@@ -1,4 +1,6 @@
 const io = require("socket.io");
+const format = require("date-fns/format");
+const userList = require("./core/UserList");
 
 class SocketServer {
   constructor(server) {
@@ -12,18 +14,34 @@ class SocketServer {
   }
 
   subscribe(socket) {
-    socket.on("join", (data, cb) => this.onDataHandler(socket, data, cb));
+    socket.on("join", (data, cb) => this.roomJoinHandler(socket, data, cb));
+    socket.on("createMessage", (data, cb) =>
+      this.messageHandler(socket, data, cb)
+    );
 
     socket.on("error", error => this.onErrorHandler(socket, error));
 
     socket.on("disconnect", () => this.onDisconnectHandler(socket));
   }
 
-  async onDataHandler(socket, request, cb) {
-    console.log(request);
-    socket.join("world");
-    socket.emit("Admin", "welcome to chat room 'World'");
-    socket.broadcast.to("world").emit("newMessage", "new user joined!");
+  roomJoinHandler(socket, request, cb) {
+    console.log("join", request);
+    socket.join(request.room);
+    userList.removeUser(request.from);
+    userList.addUser(request);
+    this.ioServer
+      .to(request.room)
+      .emit("updateUserList", userList.getUserList(request.room));
+    socket.broadcast
+      .to(request.room)
+      .emit("newMessage", { system: true, message: `${request.from} joined!` });
+    cb(request.room);
+  }
+  messageHandler(socket, request, cb) {
+    console.log("request:", request);
+    const formatted = { ...request };
+    formatted.created = format(formatted.created, "HH:mm:ss");
+    this.ioServer.to("world").emit("newMessage", formatted);
   }
 
   onErrorHandler(socket, error) {
