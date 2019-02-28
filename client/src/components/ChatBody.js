@@ -53,7 +53,7 @@ class Room extends Component {
             ) : (
               <div className={chatStyles.chatLineMessage} key={i}>
                 <span className={chatStyles.timeStamp}>{el.created}</span>
-                <span className={chatStyles.userName}>{el.from}</span>
+                <span className={chatStyles.userName}>{el.user}</span>
                 <span style={{ marginRight: 5 }}>:</span>
                 <span className={chatStyles.message}>{el.message}</span>
               </div>

@@ -3,15 +3,18 @@ class UserList {
     this.users = [];
   }
   addUser(userData) {
-    const user = { ...userData };
-    this.users.push(user);
+    this.users.push(userData);
   }
-  removeUser(from) {
-    this.users = this.users.filter(el => el.from !== from).filter(Boolean);
+  removeUser(socketId) {
+    const user = this.users.find(el => el.socketId === socketId);
+    this.users = this.users
+      .filter(el => el.socketId !== socketId)
+      .filter(Boolean);
+    return user;
   }
 
   getUserList(room) {
-    return this.users.filter(el => el.room === room).map(el => el.from);
+    return this.users.filter(el => el.room === room).map(el => el.name);
   }
 }
 

@@ -3,9 +3,8 @@ import openSocket from "socket.io-client";
 import { navigate } from "@reach/router";
 import { authState } from "./authState";
 
-const generateMessage = (from, room, message) => ({
-  created: Date.now(),
-  from,
+const generateMessage = (user, room, message) => ({
+  user,
   room,
   message: escapeHtml(message)
 });
@@ -16,12 +15,13 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 const DEFAULT_ROOM = "world";
+
 class SocketIOState {
   constructor() {
     this.socket = openSocket("/");
   }
-  socket = null;
 
+  socket = null;
   @observable
   currentRoom = "";
   @observable
@@ -38,7 +38,7 @@ class SocketIOState {
     this.socket.emit(
       "join",
       {
-        from: name,
+        user: name,
         room: room || DEFAULT_ROOM
       },
       roomId => {
@@ -56,7 +56,7 @@ class SocketIOState {
     );
   };
   @action
-  receiveMessage = data => {
+  logMessage = data => {
     this.roomMessages.push(data);
   };
   @action
@@ -68,14 +68,19 @@ class SocketIOState {
   subscribe = () => {
     this.socket.on("newMessage", (data, cb) => {
       console.log(data);
-      this.receiveMessage(data);
+      this.logMessage(data);
+    });
+    this.socket.on("connection", (data, cb) => {
+      console.log("connection:", data);
+      this.logMessage(data);
+    });
+    this.socket.on("disconnect", (data, cb) => {
+      console.log("disconnect:", data);
+      this.logMessage(data);
     });
     this.socket.on("updateUserList", (data, cb) => {
       console.log("data:", data);
       this.updateUserList(data);
-    });
-    this.socket.on("Admin", (data, cb) => {
-      console.log(data);
     });
   };
 }

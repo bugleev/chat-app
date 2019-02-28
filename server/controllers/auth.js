@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const sgMail = require("@sendgrid/mail");
 const User = require("../models/user");
-const io = require("../socketServer");
+const io = require("../core/socketServer");
 
 // NOTE: all errors are forwarded by next() callback, to handle them all in the root(server.js)
 

@@ -20,7 +20,7 @@ class MenuModule extends Component {
         <div className={chatStyles.accountInfo}>
           <div className={chatStyles.userCircle} />
           <div className={chatStyles.accountText}>
-            <span>{authState.userId}</span>
+            <span>{authState.username}</span>
             <button
               onClick={authState.logoutHandler}
               className={chatStyles.logOut}

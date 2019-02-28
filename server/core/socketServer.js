@@ -1,6 +1,6 @@
 const io = require("socket.io");
 const format = require("date-fns/format");
-const userList = require("./core/UserList");
+const userList = require("./UserList");
 
 class SocketServer {
   constructor(server) {
@@ -27,21 +27,28 @@ class SocketServer {
   roomJoinHandler(socket, request, cb) {
     console.log("join", request);
     socket.join(request.room);
-    userList.removeUser(request.from);
-    userList.addUser(request);
+    userList.removeUser(socket.id);
+    userList.addUser({
+      socketId: socket.id,
+      name: request.user,
+      room: request.room
+    });
     this.ioServer
       .to(request.room)
       .emit("updateUserList", userList.getUserList(request.room));
     socket.broadcast
       .to(request.room)
-      .emit("newMessage", { system: true, message: `${request.from} joined!` });
+      .emit("newMessage", { system: true, message: `${request.user} joined!` });
     cb(request.room);
   }
+
   messageHandler(socket, request, cb) {
     console.log("request:", request);
-    const formatted = { ...request };
-    formatted.created = format(formatted.created, "HH:mm:ss");
-    this.ioServer.to("world").emit("newMessage", formatted);
+    const message = { ...request };
+    (message.created = Date.now()),
+      //TODO store message in database
+      (message.created = format(message.created, "HH:mm:ss"));
+    this.ioServer.to(request.room).emit("newMessage", message);
   }
 
   onErrorHandler(socket, error) {
@@ -50,6 +57,15 @@ class SocketServer {
 
   onDisconnectHandler(socket) {
     console.log("Disconnected", "Socket disconnected");
+    const user = userList.removeUser(socket.id);
+    console.log("user:", user);
+    if (!user) return;
+    this.ioServer
+      .to(user.room)
+      .emit("updateUserList", userList.getUserList(user.room));
+    socket.broadcast
+      .to(user.room)
+      .emit("newMessage", { system: true, message: `${user.name} left...` });
   }
 }
 
