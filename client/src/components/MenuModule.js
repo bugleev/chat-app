@@ -18,7 +18,10 @@ class MenuModule extends Component {
     return (
       <div className={chatStyles.menuWrapper}>
         <div className={chatStyles.accountInfo}>
-          <div className={chatStyles.userCircle} />
+          <div
+            className={chatStyles.userCircle}
+            style={{ backgroundColor: authState.color }}
+          />
           <div className={chatStyles.accountText}>
             <span>{authState.username}</span>
             <button

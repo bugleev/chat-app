@@ -283,7 +283,7 @@ form
     margin: 0.5rem 0
     font-size: 1.4rem
 .chatUsers
-  width: 100px
+  width: 115px
   font-size: 1.4rem
   display: flex
   grid-row: span 2 / 3
@@ -303,7 +303,10 @@ form
       width: 90%
       font-size: 1.4rem
       overflow-x: hidden
-      text-overflow: ellipsis       
+      text-overflow: ellipsis
+    li.typing 
+      white-space: nowrap
+      background: #f3f9a763           
 .chatInputBox      
   div 
     width: 100%
@@ -353,8 +356,7 @@ form
       width: 25px
       height: 25px
       margin-right: 10px
-      border-radius: 50%
-      background-color: $secondary
+      border-radius: 50%     
       border: 2px solid $white
     .accountText
       display: flex

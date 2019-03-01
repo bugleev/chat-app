@@ -3,6 +3,11 @@ class UserList {
     this.users = [];
   }
   addUser(userData) {
+    // if user connects from other socket, replace him
+    const userInList = this.users.find(el => el.name === userData.name);
+    if (userInList) {
+      this.removeUser(userInList.socketId);
+    }
     this.users.push(userData);
   }
   removeUser(socketId) {
@@ -12,7 +17,9 @@ class UserList {
       .filter(Boolean);
     return user;
   }
-
+  getUser(socketId) {
+    return this.users.find(el => el.socketId === socketId);
+  }
   getUserList(room) {
     return this.users.filter(el => el.room === room).map(el => el.name);
   }

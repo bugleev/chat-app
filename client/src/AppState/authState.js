@@ -3,6 +3,33 @@ import { navigate } from "@reach/router";
 import { socketState } from "./socketState";
 import { fetchState } from "./fetchState";
 
+const COLORS = [
+  "#e21400",
+  "#91580f",
+  "#f8a700",
+  "#f78b00",
+  "#58dc00",
+  "#287b00",
+  "#a8f07a",
+  "#4ae8c4",
+  "#3b88eb",
+  "#3824aa",
+  "#a700ff",
+  "#d300e7"
+];
+
+// Gets the color of a username through hash function
+const getUsernameColor = username => {
+  // Compute hash code
+  let hash = 7;
+  for (let i = 0; i < username.length; i++) {
+    hash = username.charCodeAt(i) + (hash << 5) - hash;
+  }
+  // Calculate color
+  const index = Math.abs(hash % COLORS.length);
+  return COLORS[index];
+};
+
 class AuthorizationState {
   constructor() {
     // get data from local storage on startup
@@ -17,12 +44,13 @@ class AuthorizationState {
     }
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
+    const color = localStorage.getItem("color");
     const remainingMilliseconds =
       new Date(expiryDate).getTime() - new Date().getTime();
-    this.setLoginDetails({ token, id: userId, username });
+    this.setLoginDetails({ token, id: userId, username, color });
     this.setAutoLogout(remainingMilliseconds);
-    socketState.joinRoom("", this.username);
-    socketState.subscribe();
+    socketState.connectSocket();
+    socketState.joinRoom(null, this.username);
   }
   @observable
   isAuth = false;
@@ -32,6 +60,8 @@ class AuthorizationState {
   userId = null;
   @observable
   username = null;
+  @observable
+  color = "#23074d";
   @observable
   resetAllowed = false;
 
@@ -56,10 +86,6 @@ class AuthorizationState {
     }
   });
 
-  // @action
-  // getTest = flow(
-  //   function*() {
-  //     fetchState.startFetching();
   //     let request = new Request(`/api/test`, {
   //       method: "GET",
   //       headers: {
@@ -68,16 +94,7 @@ class AuthorizationState {
   //         Authorization: `Bearer ${this.token || ""}`
   //       }
   //     });
-  //     const response = yield fetchState.fetchAndVerifyResponse(request);
-  //     if (!response) return;
-  //     const data = yield response.json();
-  //     console.log("data:", data);
-  //     fetchState.fetchStop();
-  //     if (data.success) {
-  //       navigate(`/login`);
-  //     }
-  //   }.bind(this)
-  // );
+
   @action
   loginUser = flow(function*(requestBody) {
     fetchState.startFetching();
@@ -99,17 +116,20 @@ class AuthorizationState {
       localStorage.setItem("username", data.body.username);
       const remainingMilliseconds = 60 * 60 * 1000;
       const expiryDate = new Date();
+      const color = getUsernameColor(data.body.username);
+      localStorage.setItem("color", color);
       expiryDate.setFullYear(expiryDate.getFullYear() + 1);
       localStorage.setItem("expiryDate", expiryDate.toISOString());
       this.setAutoLogout(remainingMilliseconds);
       this.setLoginDetails({
         token: data.body.token,
         id: data.body.id,
-        username: data.body.username
+        username: data.body.username,
+        color
       });
       navigate(`/`);
+      socketState.connectSocket();
       socketState.joinRoom(null, this.username);
-      socketState.subscribe();
     }
   });
   @action
@@ -126,7 +146,6 @@ class AuthorizationState {
     const response = yield fetchState.fetchAndVerifyResponse(request);
     if (!response) return;
     const data = yield response.json();
-    console.log("data:", data.body);
     yield fetchState.fetchError("Reset token was sent to your email");
     yield fetchState.fetchStop();
   });
@@ -176,11 +195,12 @@ class AuthorizationState {
   });
 
   @action
-  setLoginDetails = ({ token, id, username }) => {
+  setLoginDetails = ({ token, id, username, color }) => {
     this.isAuth = true;
     this.token = token;
     this.userId = id;
     this.username = username;
+    this.color = color || "#23074d";
   };
   @action
   setAutoLogout = milliseconds => {
@@ -190,6 +210,7 @@ class AuthorizationState {
   };
   @action
   logoutHandler = () => {
+    socketState.disconnectSocket();
     this.isAuth = false;
     this.token = null;
     this.userId = null;
@@ -197,6 +218,7 @@ class AuthorizationState {
     localStorage.removeItem("expiryDate");
     localStorage.removeItem("userId");
     localStorage.removeItem("username");
+    localStorage.removeItem("color");
     navigate(`/login`);
   };
   @computed

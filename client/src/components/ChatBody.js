@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Router, Redirect, Location, navigate } from "@reach/router";
 import { observer } from "mobx-react";
-import { socketState } from "../AppState";
+import { socketState, authState } from "../AppState";
 
 import chatStyles from "../styles/Chat.module.sass";
 import UserList from "./UserList";
@@ -20,6 +20,7 @@ class Room extends Component {
   }
 
   submitOnEnter = event => {
+    socketState.updateTyping();
     if (event.which === 13 && !event.target.value.trim()) {
       event.preventDefault();
       return;
@@ -53,14 +54,19 @@ class Room extends Component {
             ) : (
               <div className={chatStyles.chatLineMessage} key={i}>
                 <span className={chatStyles.timeStamp}>{el.created}</span>
-                <span className={chatStyles.userName}>{el.user}</span>
+                <span
+                  className={chatStyles.userName}
+                  style={{ color: authState.color }}
+                >
+                  {el.user}
+                </span>
                 <span style={{ marginRight: 5 }}>:</span>
                 <span className={chatStyles.message}>{el.message}</span>
               </div>
             )
           )}
         </div>
-        <UserList users={socketState.userList} />
+        <UserList />
         <div className={chatStyles.chatInputBox}>
           <form action="POST" onSubmit={this.submitForm}>
             <div>

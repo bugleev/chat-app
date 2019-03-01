@@ -18,7 +18,9 @@ class SocketServer {
     socket.on("createMessage", (data, cb) =>
       this.messageHandler(socket, data, cb)
     );
+    socket.on("typing", data => this.typingHandler(socket, data));
 
+    socket.on("stop typing", data => this.stopTypingHandler(socket, data));
     socket.on("error", error => this.onErrorHandler(socket, error));
 
     socket.on("disconnect", () => this.onDisconnectHandler(socket));
@@ -50,7 +52,20 @@ class SocketServer {
       (message.created = format(message.created, "HH:mm:ss"));
     this.ioServer.to(request.room).emit("newMessage", message);
   }
-
+  typingHandler(socket, request) {
+    const user = userList.getUser(socket.id);
+    if (!user) return;
+    socket.broadcast.to(user.room).emit("typing", {
+      user: user.name
+    });
+  }
+  stopTypingHandler(socket, request) {
+    const user = userList.getUser(socket.id);
+    if (!user) return;
+    socket.broadcast.to(user.room).emit("stop typing", {
+      user: user.name
+    });
+  }
   onErrorHandler(socket, error) {
     console.log("Error in socket", error);
   }

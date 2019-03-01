@@ -1,17 +1,23 @@
 import React, { Component } from "react";
 import chatStyles from "../styles/Chat.module.sass";
-
-export default class UserList extends Component {
+import { observer } from "mobx-react";
+import { socketState } from "../AppState";
+@observer
+class UserList extends Component {
   render() {
     return (
       <div className={chatStyles.chatUsers}>
         <div className={chatStyles.chatUsersHeader}>Online:</div>
         <ul>
-          {this.props.users.map(el => (
-            <li key={el}>{el}</li>
+          {socketState.userList.map(el => (
+            <li
+              key={el.name}
+              className={`${el.typing ? chatStyles.typing : ""}`}
+            >{`${el.name}${el.typing ? " is typing" : ""}`}</li>
           ))}
         </ul>
       </div>
     );
   }
 }
+export default UserList;
