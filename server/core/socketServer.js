@@ -1,22 +1,33 @@
 const io = require("socket.io");
 const format = require("date-fns/format");
 const userList = require("./UserList");
+const socketioJwt = require("socketio-jwt");
 
 class SocketServer {
   constructor(server) {
     this.ioServer = io(server);
   }
   watchConnection() {
-    this.ioServer.on("connection", socket => {
-      console.log("Connected", `"Socket connected - ${socket.id}"`);
-      this.subscribe(socket);
-    });
+    this.ioServer
+      .use(
+        socketioJwt.authorize({
+          secret: process.env.JWT_SECRET,
+          handshake: true
+        })
+      )
+      .on("connection", socket => {
+        console.log("Connected", `"Socket connected - ${socket.id}"`);
+        this.subscribe(socket);
+      });
   }
 
   subscribe(socket) {
     socket.on("join", (data, cb) => this.roomJoinHandler(socket, data, cb));
     socket.on("createMessage", (data, cb) =>
       this.messageHandler(socket, data, cb)
+    );
+    socket.on("getMessages", (data, cb) =>
+      this.populateMessages(socket, data, cb)
     );
     socket.on("typing", data => this.typingHandler(socket, data));
 
@@ -25,11 +36,26 @@ class SocketServer {
 
     socket.on("disconnect", () => this.onDisconnectHandler(socket));
   }
-
+  leaveRoomAndUpdateUserList(socket) {
+    const user = userList.removeUser(socket.id);
+    if (!user) return;
+    socket.leave(user.room);
+    this.ioServer
+      .to(user.room)
+      .emit("updateUserList", userList.getUserList(user.room));
+    socket.broadcast
+      .to(user.room)
+      .emit("newMessage", { system: true, message: `${user.name} left...` });
+  }
   roomJoinHandler(socket, request, cb) {
-    console.log("join", request);
+    // leave current room
+    this.leaveRoomAndUpdateUserList(socket);
+    const rooms = this.ioServer.sockets.adapter.rooms;
+    // enter new room
     socket.join(request.room);
-    userList.removeUser(socket.id);
+    if (rooms) {
+      console.log("request:", rooms[request.room].length);
+    }
     userList.addUser({
       socketId: socket.id,
       name: request.user,
@@ -47,10 +73,15 @@ class SocketServer {
   messageHandler(socket, request, cb) {
     console.log("request:", request);
     const message = { ...request };
-    (message.created = Date.now()),
-      //TODO store message in database
-      (message.created = format(message.created, "HH:mm:ss"));
+    message.created = Date.now();
+    //TODO store message in database
+    message.created = format(message.created, "HH:mm:ss");
     this.ioServer.to(request.room).emit("newMessage", message);
+  }
+
+  populateMessages(socket, request, cb) {
+    const messages = [];
+    socket.emit("getMessages", { messages });
   }
   typingHandler(socket, request) {
     const user = userList.getUser(socket.id);
@@ -72,15 +103,7 @@ class SocketServer {
 
   onDisconnectHandler(socket) {
     console.log("Disconnected", "Socket disconnected");
-    const user = userList.removeUser(socket.id);
-    console.log("user:", user);
-    if (!user) return;
-    this.ioServer
-      .to(user.room)
-      .emit("updateUserList", userList.getUserList(user.room));
-    socket.broadcast
-      .to(user.room)
-      .emit("newMessage", { system: true, message: `${user.name} left...` });
+    this.leaveRoomAndUpdateUserList(socket);
   }
 }
 

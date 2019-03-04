@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import chatStyles from "../styles/Chat.module.sass";
 import { Link } from "@reach/router";
-import { authState } from "../AppState";
+import { authState, socketState } from "../AppState";
 
 export default class RoomList extends Component {
   render() {
@@ -11,12 +11,14 @@ export default class RoomList extends Component {
           <div>
             <h4>Room list:</h4>
             <ul className={chatStyles.roomScroll}>
-              <li onClick={authState.getTest}>Room 1</li>
               <li>
-                <Link to={`/login`}>Login</Link>
-              </li>
-              <li>
-                <Link to={`/signup`}>Signup</Link>
+                <button
+                  onClick={() =>
+                    socketState.joinRoom("Room", authState.username)
+                  }
+                >
+                  Room
+                </button>
               </li>
             </ul>
           </div>

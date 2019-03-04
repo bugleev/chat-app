@@ -34,7 +34,14 @@ class SocketIOState {
   };
   @action
   connectSocket = () => {
-    this.socket = openSocket("/");
+    const token = localStorage.getItem("token");
+    const expiryDate = localStorage.getItem("expiryDate");
+    if (!token || !expiryDate) {
+      return;
+    }
+    this.socket = openSocket("/", {
+      query: { token }
+    });
     this.subscribe();
   };
   @action
@@ -48,6 +55,7 @@ class SocketIOState {
       roomId => {
         navigate(`/room/${roomId}`);
         this.changeRoom(roomId);
+        this.getMesssagesFromServer(roomId);
       }
     );
   };
@@ -65,8 +73,12 @@ class SocketIOState {
     );
   };
   @action
-  logMessage = data => {
+  logMessageFromUser = data => {
     this.roomMessages.push(data);
+  };
+  @action
+  getMesssagesFromServer = room => {
+    this.socket.emit("getMessages", { room });
   };
   @action
   updateUserList = list => {
@@ -107,7 +119,11 @@ class SocketIOState {
   subscribe = () => {
     this.socket.on("newMessage", (data, cb) => {
       console.log(data);
-      this.logMessage(data);
+      this.logMessageFromUser(data);
+    });
+    this.socket.on("getMessages", (data, cb) => {
+      console.log("data:", data);
+      this.roomMessages = data.messages;
     });
     this.socket.on("reconnect", () => {
       this.joinRoom(this.currentRoom, authState.username);
@@ -115,6 +131,11 @@ class SocketIOState {
     });
     this.socket.on("disconnect", (data, cb) => {
       console.log("disconnect:", data);
+    });
+    this.socket.on("error", (error, cb) => {
+      if (error.type == "UnauthorizedError" || error.code == "invalid_token") {
+        authState.logoutHandler();
+      }
     });
     this.socket.on("updateUserList", (data, cb) => {
       console.log("data:", data);

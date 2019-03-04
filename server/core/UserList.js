@@ -20,6 +20,9 @@ class UserList {
   getUser(socketId) {
     return this.users.find(el => el.socketId === socketId);
   }
+  getAllRooms() {
+    return [...new Set(this.users.map(el => el.room))];
+  }
   getUserList(room) {
     return this.users.filter(el => el.room === room).map(el => el.name);
   }

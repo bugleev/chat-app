@@ -37,7 +37,7 @@ class Room extends Component {
     e.preventDefault();
     if (!e.target[0].value.trim()) return;
     socketState.createMessage(e.target[0].value);
-    event.target[0].value = "";
+    e.target[0].value = "";
   };
   render() {
     return (
