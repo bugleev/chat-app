@@ -44,9 +44,20 @@ class fetchStatus {
   @action
   fetchError = text => {
     console.log("text:", text);
+    this.disposer();
     this.isFetching = false;
     this.fetchSuccess = false;
     this.errorMessage = text;
+  };
+  @action
+  clearError = () => {
+    this.isFetching = false;
+    this.fetchSuccess = false;
+    this.errorMessage = "";
+  };
+  // clear error
+  disposer = () => {
+    setTimeout(this.clearError, 3000);
   };
 
   @computed

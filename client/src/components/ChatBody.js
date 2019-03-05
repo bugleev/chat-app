@@ -5,6 +5,7 @@ import { socketState, authState } from "../AppState";
 
 import chatStyles from "../styles/Chat.module.sass";
 import UserList from "./UserList";
+import { getUsernameColor } from "../utils/getUsernameColor";
 
 @observer
 class Room extends Component {
@@ -56,7 +57,7 @@ class Room extends Component {
                 <span className={chatStyles.timeStamp}>{el.created}</span>
                 <span
                   className={chatStyles.userName}
-                  style={{ color: authState.color }}
+                  style={{ color: getUsernameColor(el.user) }}
                 >
                   {el.user}
                 </span>

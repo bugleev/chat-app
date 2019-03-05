@@ -8,6 +8,7 @@ require("dotenv").config();
 const errorController = require("../controllers/error");
 const authRoutes = require("../routes/auth");
 const User = require("../models/user");
+const Room = require("../models/room");
 const SocketServer = require("./socketServer");
 const app = express();
 const allowCrossDomain = function(req, res, next) {

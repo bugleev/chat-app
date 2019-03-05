@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import chatStyles from "../styles/Chat.module.sass";
 import { Link } from "@reach/router";
 import { authState, socketState } from "../AppState";
+import { observer } from "mobx-react";
 
-export default class RoomList extends Component {
+@observer
+class RoomList extends Component {
   render() {
     return (
       <React.Fragment>
@@ -11,15 +13,20 @@ export default class RoomList extends Component {
           <div>
             <h4>Room list:</h4>
             <ul className={chatStyles.roomScroll}>
-              <li>
-                <button
-                  onClick={() =>
-                    socketState.joinRoom("Room", authState.username)
-                  }
-                >
-                  Room
-                </button>
-              </li>
+              {socketState.roomList.map(el => (
+                <li key={el.name}>
+                  <button
+                    onClick={() =>
+                      socketState.joinRoom(el.name, authState.username)
+                    }
+                  >
+                    {el.name}
+                  </button>
+                  {el.name === socketState.currentRoom ? (
+                    <span className={chatStyles.activeRoom}>active</span>
+                  ) : null}
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -31,3 +38,5 @@ export default class RoomList extends Component {
     );
   }
 }
+
+export default RoomList;

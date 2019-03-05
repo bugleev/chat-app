@@ -53,6 +53,13 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
   a 
     text-decoration: none 
     color: inherit
+  button 
+    background: none
+    border: none
+    cursor: pointer  
+    color: inherit
+  button:focus
+    outline: none    
   h2, h3, h4, h5 
     text-align: center    
   html
@@ -228,6 +235,7 @@ form
   a:hover 
     text-decoration: underline 
 .chatWrapper  
+  position: relative
   display: grid
   grid-template-columns: auto 1fr
   align-items: center
@@ -389,31 +397,49 @@ form
     display: flex
     flex-direction: column
     justify-content: space-between
-    padding: 1rem
+    align-items: center
+    padding: 1rem 0
     width: 100%
-    background-color: #8f3a24   
-    .roomScroll
-      padding: 0
-      overflow-x: hidden   
-      max-height: 400px         
-      li 
-        padding: 0
-        margin: 0
-        margin-bottom: 1rem
-        display: flex
-        align-items: center
-        list-style: none       
-        height: 25px
-        justify-content: center       
-        color: $white
-        text-decoration: none
-        background-color: darken($primary, 15%)
-        cursor: pointer       
-      li:hover
-        background-color: $pr_hover
-    +custom-scroll("roomScroll")  
+    background-color: #8f3a24
+    >div
+      width: 100%   
+      .roomScroll
+        padding: 1rem 0
+        overflow-x: hidden   
+        max-height: 400px         
+        li 
+          position: relative
+          width: 90%
+          padding: 0
+          margin: 0 auto
+          margin-bottom: 1rem
+          display: flex
+          align-items: center
+          list-style: none       
+          height: 25px
+          justify-content: center       
+          color: $white
+          text-decoration: none
+          background-color: darken($primary, 15%)
+          cursor: pointer
+          background-color: $pr_hover       
+          .activeRoom 
+            position: absolute
+            right: -5px
+            top: -5px
+            padding: 0 2px
+            transform: skew(0, -3deg) 
+            font-size: 1rem
+            font-weight: bold
+            text-transform: uppercase
+            color: #23074d
+            background: linear-gradient(#F3F9A7, #CAC531)       
+        li:hover
+          background: linear-gradient(#F3F9A7, #CAC531)    
+          color: #23074d
+      +custom-scroll("roomScroll")  
 .addRoomWrapper  
-  height: calc(100vh - 250px)
+  height: calc(100vh - 150px)
   padding: 1rem 0 0 1rem
   .addRoomControls
     display: flex

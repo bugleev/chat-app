@@ -1,32 +1,53 @@
 import React, { Component } from "react";
 import { Link } from "@reach/router";
-import chatStyles from "../styles/Chat.module.sass";
+import { observer } from "mobx-react";
 
-export default class AddRoomForm extends Component {
+import chatStyles from "../styles/Chat.module.sass";
+import { formState, socketState } from "../AppState";
+
+@observer
+class AddRoomForm extends Component {
+  formState = new formState();
+
   render() {
-    const showError = false;
+    const formState = this.formState;
+    const formErrors = Object.keys(formState.createRoomForm.$)
+      .map(el => formState[el].error)
+      .filter(Boolean);
+    const showError = formState.createRoomForm.error;
     return (
       <div className={chatStyles.addRoomWrapper}>
         <h5>Create your own room</h5>
-        <form action="POST">
+        <form
+          action="POST"
+          onSubmit={e => formState.onSubmit(e, "createRoomForm")}
+        >
           <div
             className={`${chatStyles.formField} ${
               showError ? chatStyles.error : ""
             }`}
           >
             <span />
-            <input type="text" name="roomname" placeholder="enter a name" />
+            <input
+              type="text"
+              value={formState.roomname.value}
+              onChange={e => formState.roomname.onChange(e.target.value)}
+              placeholder="enter a name"
+            />
           </div>
+
           <div className={chatStyles.addRoomControls}>
             <button className={chatStyles.cancelButton}>
-              <Link to="/">Cancel</Link>
+              <Link to={`/room/${socketState.currentRoom}`}>Cancel</Link>
             </button>
             <button className={chatStyles.loginButton}>Create</button>
           </div>
           {showError ? (
             <div className={chatStyles.formErrorWrapper}>
               <ul>
-                <li>Please enter room name</li>
+                {formErrors.map((el, i) => (
+                  <li key={i}>{el}</li>
+                ))}
               </ul>
             </div>
           ) : null}
@@ -35,3 +56,5 @@ export default class AddRoomForm extends Component {
     );
   }
 }
+
+export default AddRoomForm;

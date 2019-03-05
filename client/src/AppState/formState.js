@@ -1,5 +1,5 @@
 import { FormState, FieldState } from "formstate";
-import { authState } from "./authState";
+import { authState, socketState } from "./";
 
 const required = fieldName => value => {
   const error = `${fieldName} required!`;
@@ -31,6 +31,7 @@ const anyDigit = val =>
 export class formState {
   // Create a field
   username = new FieldState("").validators(required("username"));
+  roomname = new FieldState("").validators(required("roomname"));
   email = new FieldState("").validators(required("email"), email);
   signupPassword = new FieldState("").validators(
     required("password"),
@@ -63,6 +64,9 @@ export class formState {
   resetPassForm = new FormState({
     resetPassword: this.resetPassword,
     confirmResetPassword: this.confirmResetPassword
+  });
+  createRoomForm = new FormState({
+    roomname: this.roomname
   });
 
   clearForm = () => {
@@ -101,6 +105,11 @@ export class formState {
         authState.resetPassword({
           password: this.resetPassword.$,
           confirmPassword: this.confirmResetPassword.$
+        });
+        break;
+      case "createRoomForm":
+        socketState.createRoom({
+          room: this.roomname.$
         });
         break;
 

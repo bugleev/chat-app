@@ -1,10 +1,11 @@
 import { observable, action, computed, flow } from "mobx";
 import openSocket from "socket.io-client";
 import { navigate } from "@reach/router";
-import { authState } from "./authState";
+import { authState, fetchState } from "./";
 
-const generateMessage = (user, room, message) => ({
+const generateMessage = (user, id, room, message) => ({
   user,
+  id,
   room,
   message: escapeHtml(message)
 });
@@ -24,6 +25,8 @@ class SocketIOState {
   roomMessages = [];
   @observable
   userList = [];
+  @observable
+  roomList = [];
 
   typing = false;
   lastTypingTime = null;
@@ -45,9 +48,25 @@ class SocketIOState {
     this.subscribe();
   };
   @action
+  createRoom = ({ room }) => {
+    console.log("room:", room);
+    this.socket.emit(
+      "createRoom",
+      {
+        userId: authState.userId,
+        room
+      },
+      roomId => {
+        navigate(`/room/${roomId}`);
+        this.changeRoom(roomId);
+        this.getMesssagesFromServer(roomId);
+      }
+    );
+  };
+  @action
   joinRoom = (room, name) => {
     this.socket.emit(
-      "join",
+      "joinRoom",
       {
         user: name,
         room: room || DEFAULT_ROOM
@@ -69,11 +88,17 @@ class SocketIOState {
   createMessage = message => {
     this.socket.emit(
       "createMessage",
-      generateMessage(authState.username, this.currentRoom, message)
+      generateMessage(
+        authState.username,
+        authState.userId,
+        this.currentRoom,
+        message
+      )
     );
   };
   @action
   logMessageFromUser = data => {
+    console.log("data:", data);
     this.roomMessages.push(data);
   };
   @action
@@ -133,13 +158,21 @@ class SocketIOState {
       console.log("disconnect:", data);
     });
     this.socket.on("error", (error, cb) => {
+      console.log("error:", error);
       if (error.type == "UnauthorizedError" || error.code == "invalid_token") {
         authState.logoutHandler();
       }
     });
+    this.socket.on("appError", (error, cb) => {
+      fetchState.fetchError(error.message || "server error!");
+    });
     this.socket.on("updateUserList", (data, cb) => {
       console.log("data:", data);
       this.updateUserList(data);
+    });
+    this.socket.on("updateRoomList", (data, cb) => {
+      console.log("data:", data);
+      this.roomList = data.rooms;
     });
     this.socket.on("typing", data => {
       this.updateTypingUser({ name: data.user, typing: true });

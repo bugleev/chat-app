@@ -4,6 +4,7 @@ import chatStyles from "../styles/Chat.module.sass";
 import RoomList from "./RoomList";
 import { observer } from "mobx-react";
 import { authState } from "../AppState";
+import { getUsernameColor } from "../utils/getUsernameColor";
 
 @observer
 class MenuModule extends Component {
@@ -20,7 +21,7 @@ class MenuModule extends Component {
         <div className={chatStyles.accountInfo}>
           <div
             className={chatStyles.userCircle}
-            style={{ backgroundColor: authState.color }}
+            style={{ backgroundColor: getUsernameColor(authState.username) }}
           />
           <div className={chatStyles.accountText}>
             <span>{authState.username}</span>
