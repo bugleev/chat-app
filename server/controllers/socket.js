@@ -2,13 +2,15 @@ const User = require("../models/user");
 const Room = require("../models/room");
 const Message = require("../models/message");
 const userList = require("./UserList");
-const format = require("date-fns/format");
 
 exports.createRoomHandler = async function(socket, request, cb) {
   try {
     const { userId, room } = request;
     if (!room) throw new Error("No room provided!");
-    console.log("room:", room, request);
+    const roomsCreated = await Room.find({ creator: userId }).countDocuments();
+    if (roomsCreated >= 2) {
+      throw new Error("Only 2 rooms per user allowed!");
+    }
     const newRoom = new Room({
       name: room,
       creator: userId
@@ -21,13 +23,12 @@ exports.createRoomHandler = async function(socket, request, cb) {
     if (error.code === 11000) {
       message += "room name taken!";
     }
-    socket.emit("error", { message });
+    socket.emit("error", { message: message || error.message });
   }
 };
 exports.updateRoomList = async function(socket, request, cb) {
   // emit to all on room create, otherwise update only socket
   const emitTarget = socket || this.ioServer;
-
   try {
     const roomList = await Room.find().select("name -_id");
     emitTarget.emit("updateRoomList", { rooms: roomList });
@@ -40,22 +41,11 @@ exports.joinRoomHandler = async function(socket, request, cb) {
   this.leaveRoomAndUpdateUserList(socket);
   // enter new room
   socket.join(request.room);
-  // if (rooms) {
-  //   console.log("request:", rooms[request.room].length);
-  // }
   userList.addUser({
     socketId: socket.id,
     name: request.user,
     room: request.room
   });
-  ////POPULATE rOOM messages
-  // const room = await Room.findOne({ name: request.room }).populate({
-  //   path: "messages",
-  //   populate: { path: "author", select: "username -_id" },
-  //   select: "author text -_id"
-  // });
-
-  // console.log("room:", room.messages);
   this.ioServer
     .to(request.room)
     .emit("updateUserList", userList.getUserList(request.room));
@@ -79,25 +69,41 @@ exports.leaveRoomAndUpdateUserList = function(socket) {
 exports.messageHandler = async function(socket, request, cb) {
   try {
     request.created = Date.now();
-    //TODO store message in database
-    if (!request.message) throw new Error("No message provided!");
+    if (!request.text) throw new Error("No message provided!");
     const { _id } = await Room.findOne({ name: request.room }).select("_id");
     const message = new Message({
       author: request.id,
       room: _id,
-      text: request.message
+      text: request.text
     });
-    request.created = format(request.created, "HH:mm:ss");
     this.ioServer.to(request.room).emit("newMessage", request);
-    const savedMessage = await message.save();
+    message.save();
   } catch (error) {
     socket.emit("error", error);
   }
 };
 
-exports.populateMessages = function(socket, request, cb) {
-  const messages = [];
-  socket.emit("getMessages", { messages });
+exports.populateMessages = async function(socket, { limit, skip, room }, cb) {
+  /***
+   * 1. Populate virtual field on provided room, and populate author field in found messages
+   * 2. Set limit and skip options from request
+   * 3. Sort messages by date to apply skip from the most recent messages
+   */
+  const { messages } = await Room.findOne({ name: room }).populate({
+    path: "messages",
+    populate: { path: "author", select: "username -_id" },
+    select: "author text created -_id",
+    options: { limit, skip, sort: { created: -1 } }
+  });
+  // sort found messages backwards to display in a correct order on UI, map them to the expected format
+  const formattedMessages = messages
+    .sort((a, b) => a.created - b.created)
+    .map(el => ({
+      user: el.author.username,
+      text: el.text,
+      created: el.created
+    }));
+  socket.emit("populateMessagesFromDB", { messages: formattedMessages });
 };
 exports.typingHandler = function(socket, request) {
   const user = userList.getUser(socket.id);
@@ -114,6 +120,7 @@ exports.stopTypingHandler = function(socket, request) {
   });
 };
 exports.onErrorHandler = function(socket, error) {
+  // emit different type of error event to handle it on the UI, on the "error" type socket would just close
   console.log("Error in socket", error);
   socket.emit("appError", error);
 };

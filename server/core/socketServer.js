@@ -32,7 +32,7 @@ class SocketServer {
     socket.on("createMessage", (data, cb) =>
       socketController.messageHandler(socket, data, cb)
     );
-    socket.on("getMessages", (data, cb) =>
+    socket.on("getMessagesFromDB", (data, cb) =>
       socketController.populateMessages(socket, data, cb)
     );
     socket.on("typing", data => socketController.typingHandler(socket, data));

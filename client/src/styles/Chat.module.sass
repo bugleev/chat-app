@@ -54,6 +54,7 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
     text-decoration: none 
     color: inherit
   button 
+    font-family: 'chat'
     background: none
     border: none
     cursor: pointer  
@@ -407,7 +408,7 @@ form
         padding: 1rem 0
         overflow-x: hidden   
         max-height: 400px         
-        li 
+        button 
           position: relative
           width: 90%
           padding: 0
@@ -434,7 +435,7 @@ form
             text-transform: uppercase
             color: #23074d
             background: linear-gradient(#F3F9A7, #CAC531)       
-        li:hover
+        button:hover
           background: linear-gradient(#F3F9A7, #CAC531)    
           color: #23074d
       +custom-scroll("roomScroll")  

@@ -23,5 +23,5 @@ const messageSchema = new Schema({
     required: true
   }
 });
-
+messageSchema.index({ created: -1 });
 module.exports = mongoose.model("Message", messageSchema);

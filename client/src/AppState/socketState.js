@@ -1,13 +1,15 @@
 import { observable, action, computed, flow } from "mobx";
 import openSocket from "socket.io-client";
 import { navigate } from "@reach/router";
+const format = require("date-fns/format");
+
 import { authState, fetchState } from "./";
 
 const generateMessage = (user, id, room, message) => ({
   user,
   id,
   room,
-  message: escapeHtml(message)
+  text: escapeHtml(message)
 });
 
 const escapeHtml = str => {
@@ -17,6 +19,7 @@ const escapeHtml = str => {
 };
 const DEFAULT_ROOM = "world";
 const TYPING_TIMER_LENGTH = 400;
+const MESSAGES_LIMIT = 40;
 class SocketIOState {
   socket = null;
   @observable
@@ -25,6 +28,9 @@ class SocketIOState {
   roomMessages = [];
   @observable
   userList = [];
+  @observable
+  roomList = [];
+
   @observable
   roomList = [];
 
@@ -49,7 +55,6 @@ class SocketIOState {
   };
   @action
   createRoom = ({ room }) => {
-    console.log("room:", room);
     this.socket.emit(
       "createRoom",
       {
@@ -59,7 +64,6 @@ class SocketIOState {
       roomId => {
         navigate(`/room/${roomId}`);
         this.changeRoom(roomId);
-        this.getMesssagesFromServer(roomId);
       }
     );
   };
@@ -82,8 +86,19 @@ class SocketIOState {
   @action
   changeRoom = room => {
     this.currentRoom = room;
+    this.roomMessages = [];
   };
 
+  @computed get skippedAmount() {
+    // amount of messages to skip when quering a database (excluding system messages)
+    return this.roomMessages.filter(el => !el.system).length;
+  }
+  @computed get messages() {
+    return this.roomMessages.map(el => ({
+      timeStamp: format(el.created, "HH:mm:ss"),
+      ...el
+    }));
+  }
   @action
   createMessage = message => {
     this.socket.emit(
@@ -102,8 +117,12 @@ class SocketIOState {
     this.roomMessages.push(data);
   };
   @action
-  getMesssagesFromServer = room => {
-    this.socket.emit("getMessages", { room });
+  getMesssagesFromServer = (room = this.currentRoom) => {
+    this.socket.emit("getMessagesFromDB", {
+      room,
+      skip: this.skippedAmount,
+      limit: MESSAGES_LIMIT
+    });
   };
   @action
   updateUserList = list => {
@@ -140,15 +159,28 @@ class SocketIOState {
       }, TYPING_TIMER_LENGTH);
     }
   };
+  convertTimeStamps = messages => {
+    messages.forEach(el => {
+      el.created = format(el.created, "HH:mm:ss");
+    });
+    return messages;
+  };
   @action
   subscribe = () => {
     this.socket.on("newMessage", (data, cb) => {
       console.log(data);
       this.logMessageFromUser(data);
     });
-    this.socket.on("getMessages", (data, cb) => {
-      console.log("data:", data);
-      this.roomMessages = data.messages;
+    this.socket.on("populateMessagesFromDB", ({ messages }, cb) => {
+      console.log("data:", messages);
+      if (messages.length) {
+        this.roomMessages.unshift(...messages);
+      } else {
+        this.roomMessages.unshift({
+          system: true,
+          message: `No messages found...`
+        });
+      }
     });
     this.socket.on("reconnect", () => {
       this.joinRoom(this.currentRoom, authState.username);

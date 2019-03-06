@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const sgMail = require("@sendgrid/mail");
 const User = require("../models/user");
-const io = require("../core/socketServer");
 
 // NOTE: all errors are forwarded by next() callback, to handle them all in the root(server.js)
 
@@ -36,7 +35,6 @@ exports.signup = async (req, res, next) => {
   }
 };
 exports.login = async (req, res, next) => {
-  // io.getServer().emit
   try {
     const { email, password } = req.body;
     const userInDB = await User.findOne({ email });
@@ -137,11 +135,3 @@ exports.resetPassword = async (req, res, next) => {
     next(err);
   }
 };
-// exports.getTest = async (req, res, next) => {
-//   try {
-//     console.log("req.body:", req.userId);
-//   } catch (err) {
-//     err.statusCode = err.statusCode || 500;
-//     next(err);
-//   }
-// };

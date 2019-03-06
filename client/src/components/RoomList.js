@@ -14,18 +14,17 @@ class RoomList extends Component {
             <h4>Room list:</h4>
             <ul className={chatStyles.roomScroll}>
               {socketState.roomList.map(el => (
-                <li key={el.name}>
-                  <button
-                    onClick={() =>
-                      socketState.joinRoom(el.name, authState.username)
-                    }
-                  >
-                    {el.name}
-                  </button>
+                <button
+                  key={el.name}
+                  onClick={() =>
+                    socketState.joinRoom(el.name, authState.username)
+                  }
+                >
+                  {el.name}
                   {el.name === socketState.currentRoom ? (
                     <span className={chatStyles.activeRoom}>active</span>
                   ) : null}
-                </li>
+                </button>
               ))}
             </ul>
           </div>
