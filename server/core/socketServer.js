@@ -4,7 +4,9 @@ let socketController = require("../controllers/socket");
 
 class SocketServer {
   constructor(server) {
-    this.ioServer = io(server);
+    this.ioServer = io(server, {
+      path: "/da_chat"
+    });
     socketController = Object.assign(this, socketController);
   }
   watchConnection() {

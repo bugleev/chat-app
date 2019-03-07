@@ -25,7 +25,7 @@ module.exports = () => {
           target: ENDPOINT,
           pathRewrite: { "^/api": "" }
         },
-        "/socket.io": {
+        "/da_chat": {
           target: ENDPOINT,
           ws: true
         }

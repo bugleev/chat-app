@@ -37,22 +37,31 @@ exports.updateRoomList = async function(socket, request, cb) {
   }
 };
 exports.joinRoomHandler = async function(socket, request, cb) {
-  // leave current room
-  this.leaveRoomAndUpdateUserList(socket);
-  // enter new room
-  socket.join(request.room);
-  userList.addUser({
-    socketId: socket.id,
-    name: request.user,
-    room: request.room
-  });
-  this.ioServer
-    .to(request.room)
-    .emit("updateUserList", userList.getUserList(request.room));
-  socket.broadcast
-    .to(request.room)
-    .emit("newMessage", { system: true, message: `${request.user} joined!` });
-  cb(request.room);
+  try {
+    // leave current room
+    this.leaveRoomAndUpdateUserList(socket);
+    // enter new room
+    const room = await Room.findOne({ name: request.room });
+    if (!room) {
+      throw new Error("No room found with that name!");
+    }
+    socket.join(request.room);
+    userList.addUser({
+      socketId: socket.id,
+      name: request.user,
+      room: request.room
+    });
+    this.ioServer
+      .to(request.room)
+      .emit("updateUserList", userList.getUserList(request.room));
+    socket.broadcast.to(request.room).emit("newMessage", {
+      system: true,
+      message: `${request.user} joined!`
+    });
+    cb(request.room);
+  } catch (error) {
+    socket.emit("error", { message: error.message });
+  }
 };
 
 exports.leaveRoomAndUpdateUserList = function(socket) {

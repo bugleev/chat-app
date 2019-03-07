@@ -1,7 +1,7 @@
-import { observable, action, computed, flow } from "mobx";
+import { observable, action, computed } from "mobx";
 import openSocket from "socket.io-client";
-import { navigate } from "@reach/router";
-const format = require("date-fns/format");
+import { navigate, createHistory } from "@reach/router";
+import { format, isSameDay } from "date-fns";
 
 import { authState, fetchState } from "./";
 
@@ -17,6 +17,20 @@ const escapeHtml = str => {
   div.appendChild(document.createTextNode(str));
   return div.innerHTML;
 };
+const insertDatesInMessages = messages => {
+  messages.reduce((acc, cur, idx) => {
+    const same = isSameDay(acc.created, cur.created);
+    if (!same && !acc.system && !cur.system) {
+      messages.splice(idx, 0, {
+        system: true,
+        message: `${format(cur.created, "DD MMMM YYYY")}`
+      });
+    }
+    return cur;
+  });
+  return messages;
+};
+
 const DEFAULT_ROOM = "world";
 const TYPING_TIMER_LENGTH = 400;
 const MESSAGES_LIMIT = 40;
@@ -25,7 +39,7 @@ class SocketIOState {
   @observable
   currentRoom = "";
   @observable
-  roomMessages = [];
+  messages = [];
   @observable
   userList = [];
   @observable
@@ -37,21 +51,44 @@ class SocketIOState {
   typing = false;
   lastTypingTime = null;
 
+  @computed get skippedAmount() {
+    // amount of messages to skip when quering a database (excluding system messages)
+    return this.messages.filter(el => !el.system).length;
+  }
+  @computed get roomMessages() {
+    // format dates to display on UI
+    return this.messages.map(el => ({
+      timeStamp: format(el.created, "HH:mm:ss"),
+      ...el
+    }));
+  }
   @action
   disconnectSocket = () => {
     this.socket.destroy();
   };
   @action
   connectSocket = () => {
+    // read token from local storage and pass it along on connection
     const token = localStorage.getItem("token");
     const expiryDate = localStorage.getItem("expiryDate");
+    const username = localStorage.getItem("username");
     if (!token || !expiryDate) {
       return;
     }
     this.socket = openSocket("/", {
+      path: "/da_chat",
       query: { token }
     });
-    this.subscribe();
+    if (this.socket) {
+      // check for URL to have a specific room to connect
+      let history = createHistory(window);
+      let room = null;
+      if (history.location.pathname.slice(0, 6) === "/room/") {
+        room = decodeURI(history.location.pathname.slice(6));
+      }
+      this.subscribe();
+      this.joinRoom(room, username);
+    }
   };
   @action
   createRoom = ({ room }) => {
@@ -61,12 +98,14 @@ class SocketIOState {
         userId: authState.userId,
         room
       },
+      // navigate to room on callback from server
       roomId => {
         navigate(`/room/${roomId}`);
         this.changeRoom(roomId);
       }
     );
   };
+
   @action
   joinRoom = (room, name) => {
     this.socket.emit(
@@ -75,6 +114,7 @@ class SocketIOState {
         user: name,
         room: room || DEFAULT_ROOM
       },
+      // navigate to room on callback from server
       roomId => {
         navigate(`/room/${roomId}`);
         this.changeRoom(roomId);
@@ -86,19 +126,9 @@ class SocketIOState {
   @action
   changeRoom = room => {
     this.currentRoom = room;
-    this.roomMessages = [];
+    this.messages = [];
   };
 
-  @computed get skippedAmount() {
-    // amount of messages to skip when quering a database (excluding system messages)
-    return this.roomMessages.filter(el => !el.system).length;
-  }
-  @computed get messages() {
-    return this.roomMessages.map(el => ({
-      timeStamp: format(el.created, "HH:mm:ss"),
-      ...el
-    }));
-  }
   @action
   createMessage = message => {
     this.socket.emit(
@@ -113,8 +143,7 @@ class SocketIOState {
   };
   @action
   logMessageFromUser = data => {
-    console.log("data:", data);
-    this.roomMessages.push(data);
+    this.messages.push(data);
   };
   @action
   getMesssagesFromServer = (room = this.currentRoom) => {
@@ -142,7 +171,7 @@ class SocketIOState {
     user.typing = typing;
   };
   @action
-  updateTyping = () => {
+  updateTypingEvent = () => {
     if (this.socket) {
       if (!this.typing) {
         this.typing = true;
@@ -159,29 +188,23 @@ class SocketIOState {
       }, TYPING_TIMER_LENGTH);
     }
   };
-  convertTimeStamps = messages => {
-    messages.forEach(el => {
-      el.created = format(el.created, "HH:mm:ss");
-    });
-    return messages;
-  };
+
   @action
   subscribe = () => {
     this.socket.on("newMessage", (data, cb) => {
-      console.log(data);
       this.logMessageFromUser(data);
     });
     this.socket.on("populateMessagesFromDB", ({ messages }, cb) => {
-      console.log("data:", messages);
       if (messages.length) {
-        this.roomMessages.unshift(...messages);
+        this.messages.unshift(...insertDatesInMessages(messages));
       } else {
-        this.roomMessages.unshift({
+        this.messages.unshift({
           system: true,
           message: `No messages found...`
         });
       }
     });
+
     this.socket.on("reconnect", () => {
       this.joinRoom(this.currentRoom, authState.username);
       console.log("you have been reconnected");
@@ -197,13 +220,14 @@ class SocketIOState {
     });
     this.socket.on("appError", (error, cb) => {
       fetchState.fetchError(error.message || "server error!");
+      if (error.message === "No room found with that name!") {
+        this.joinRoom(this.currentRoom, authState.username);
+      }
     });
     this.socket.on("updateUserList", (data, cb) => {
-      console.log("data:", data);
       this.updateUserList(data);
     });
     this.socket.on("updateRoomList", (data, cb) => {
-      console.log("data:", data);
       this.roomList = data.rooms;
     });
     this.socket.on("typing", data => {

@@ -28,7 +28,16 @@ app.use(allowCrossDomain);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+// app.use((req, res, next) => {
+//   var err = null;
+//   try {
+//     decodeURIComponent(req.path);
+//   } catch (e) {
+//     const error = new Error("Invalid URL!");
+//     error.statusCode = 400;
+//     next(error);
+//   }
+// });
 app.use(authRoutes);
 // handle server errors
 app.use((error, req, res, next) => {
@@ -51,6 +60,7 @@ exports.startServer = done => {
       const server = app.listen(process.env.PORT, () =>
         console.log(`server started at port ${process.env.PORT}`)
       );
+      server.timeout = 6000;
       connectedSocket = require("./socketServer").init(server);
       connectedSocket.watchConnection();
     })

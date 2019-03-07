@@ -40,15 +40,6 @@ class AuthorizationState {
     }
   });
 
-  //     let request = new Request(`/api/test`, {
-  //       method: "GET",
-  //       headers: {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${this.token || ""}`
-  //       }
-  //     });
-
   @action
   readUserFromLocalStorage = () => {
     const token = localStorage.getItem("token");
@@ -67,7 +58,6 @@ class AuthorizationState {
     this.setLoginDetails({ token, id: userId, username });
     this.setAutoLogout(remainingMilliseconds);
     socketState.connectSocket();
-    socketState.joinRoom(null, this.username);
   };
 
   @action
@@ -101,7 +91,6 @@ class AuthorizationState {
       });
       navigate(`/`);
       socketState.connectSocket();
-      socketState.joinRoom(null, this.username);
     }
   });
   @action

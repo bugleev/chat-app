@@ -11,6 +11,7 @@ import { getUsernameColor } from "../utils/getUsernameColor";
 class Room extends Component {
   chatList = React.createRef();
   componentDidMount() {
+    console.log("chatNode:");
     const chatNode = this.chatList.current;
     chatNode.addEventListener("scroll", this.fetchMessagesOnscroll);
     document
@@ -52,16 +53,16 @@ class Room extends Component {
     if (e.target.scrollTop === 0) {
       // make new request only if first message is not the system one with provided text
       if (
-        socketState.messages.length &&
-        socketState.messages[0].message !== "No messages found..." &&
-        !socketState.messages[0].system
+        socketState.roomMessages.length &&
+        socketState.roomMessages[0].message !== "No messages found..." &&
+        !socketState.roomMessages[0].system
       ) {
         socketState.getMesssagesFromServer();
       }
     }
   };
   submitOnEnter = event => {
-    socketState.updateTyping();
+    socketState.updateTypingEvent();
     if (event.which === 13 && !event.target.value.trim()) {
       event.preventDefault();
       return;
@@ -81,14 +82,13 @@ class Room extends Component {
     e.target[0].value = "";
   };
   render() {
-    console.log("return:", socketState.messages);
     return (
       <React.Fragment>
         <div className={chatStyles.currentRoom}>
           <span>{this.props.roomId}</span>
         </div>
         <div className={chatStyles.chatList} ref={this.chatList}>
-          {socketState.messages.map((el, i) =>
+          {socketState.roomMessages.map((el, i) =>
             el.system ? (
               <div className={chatStyles.chatLineMessage} key={i}>
                 <span className={chatStyles.systemMessage}>{el.message}</span>
