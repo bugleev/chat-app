@@ -1,4 +1,5 @@
 const io = require("socket.io");
+const ss = require('socket.io-stream');
 const socketioJwt = require("socketio-jwt");
 let socketController = require("../controllers/socket");
 
@@ -41,6 +42,15 @@ class SocketServer {
     socket.on("stop typing", data =>
       socketController.stopTypingHandler(socket, data)
     );
+    socket.on("upload", (request, file, cb) =>
+      socketController.uploadFileMessage(socket, request, file, cb)
+    );
+    socket.on("transfer.start", data =>
+      socketController.startFileTransfer(socket, data)
+    );
+    socket.on('transfer.progress', (stream, data) => {
+      socketController.progressFileTransfer(socket, stream, data)
+    });
     socket.on("error", error => socketController.onErrorHandler(socket, error));
     socket.on("disconnect", () => socketController.onDisconnectHandler(socket));
   }

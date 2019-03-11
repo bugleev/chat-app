@@ -73,6 +73,8 @@
     "react-icons": "^3.4.0",
     "react-loader-spinner": "^2.3.0",
     "react-spinners": "^0.5.1",
-    "socket.io-client": "^2.2.0"
+    "socket.io-client": "^2.2.0",
+    "socket.io-stream": "^0.9.1",
+    "streamsaver": "^1.2.0"
   }
 }

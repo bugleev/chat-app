@@ -291,6 +291,14 @@ form
     display: inline-block
     margin: 0.5rem 0
     font-size: 1.4rem
+.fileMessage
+  composes: chatButton
+  display: inline
+  padding: 0 1.8rem
+  margin-bottom: 0.5rem
+  background: $secondary
+.fileMessage:hover  
+  background: $sec_hover   
 .chatUsers
   width: 115px
   font-size: 1.4rem
@@ -342,8 +350,20 @@ form
   display: flex
   padding: 1rem 0
   justify-content: center
-
 +custom-scroll("chatList")   
+.fileInput 
+  display: flex
+  justify-content: center
+  align-items: flex-start
+  input
+    opacity: 0
+    position: absolute
+    z-index: -1
+.fileLabel
+  composes: chatButton
+  margin-top: 1rem 
+  padding: 1.8rem 0.8rem
+
 .menuWrapper
   display: flex
   flex-direction: column

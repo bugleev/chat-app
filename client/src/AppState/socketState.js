@@ -2,6 +2,8 @@ import { observable, action, computed } from "mobx";
 import openSocket from "socket.io-client";
 import { navigate, createHistory } from "@reach/router";
 import { format, isSameDay } from "date-fns";
+import ss from "socket.io-stream";
+import { createWriteStream, supported, version } from 'streamsaver'
 
 import { authState, fetchState } from "./";
 
@@ -47,9 +49,12 @@ class SocketIOState {
 
   @observable
   roomList = [];
+  @observable
+  fileUploading = false;
 
   typing = false;
   lastTypingTime = null;
+  uploadedFile = null;
 
   @computed get skippedAmount() {
     // amount of messages to skip when quering a database (excluding system messages)
@@ -143,6 +148,7 @@ class SocketIOState {
   };
   @action
   logMessageFromUser = data => {
+    console.log('data:', data)
     this.messages.push(data);
   };
   @action
@@ -188,7 +194,45 @@ class SocketIOState {
       }, TYPING_TIMER_LENGTH);
     }
   };
-
+  @action
+  handleFileUpload = (e) => {
+    console.log('e:', e.target.files);
+    const file = e.target.files[0]
+    if (file && file.size / 1000000 > 10) {
+      e.target.value = "";
+      fetchState.fetchError("Недопустимый размер файла!")
+      return;
+    }
+    this.uploadedFile = file;
+    this.fileUploading = true;
+    this.socket.emit(
+      "upload",
+      {
+        id: authState.userId,
+        room: this.currentRoom,
+        filename: file.name,
+        type: file.type,
+        user: authState.username
+      },
+      file,
+      () => {
+        this.fileUploading = false;
+      }
+    );
+  };
+  @action
+  receiveFile = (fileOwner, filename) => {
+    if (fileOwner === authState.username) return;
+    this.socket.emit(
+      "transfer.start",
+      {
+        id: authState.userId,
+        room: this.currentRoom,
+        filename,
+        fileOwner
+      }
+    );
+  };
   @action
   subscribe = () => {
     this.socket.on("newMessage", (data, cb) => {
@@ -205,6 +249,22 @@ class SocketIOState {
       }
     });
 
+    this.socket.on("transfer.start", ({ filename, recepient }, cb) => {
+      const stream = ss.createStream();
+      // upload a file to the server.
+      ss(this.socket).emit('transfer.progress', stream, { size: this.uploadedFile.size, name: this.uploadedFile.name, recepient });
+      ss.createBlobReadStream(this.uploadedFile).pipe(stream);
+    });
+    ss(this.socket).on("transfer.progress", (s, data) => {
+      console.log('s:', s)
+      const fileStream = createWriteStream(`${data.name}`)
+      console.log('fileStream:', fileStream)
+      const writer = fileStream.getWriter()
+      // s.pipe(chunk => {
+      //   writer(chunk);
+
+      // });
+    });
     this.socket.on("reconnect", () => {
       this.joinRoom(this.currentRoom, authState.username);
       console.log("you have been reconnected");

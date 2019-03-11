@@ -21,7 +21,12 @@ const messageSchema = new Schema({
   text: {
     type: String,
     required: true
-  }
+  },
+  isFile: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
 });
 messageSchema.index({ created: -1 });
 module.exports = mongoose.model("Message", messageSchema);

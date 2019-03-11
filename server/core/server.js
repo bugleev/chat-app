@@ -11,7 +11,7 @@ const User = require("../models/user");
 const Room = require("../models/room");
 const SocketServer = require("./socketServer");
 const app = express();
-const allowCrossDomain = function(req, res, next) {
+const allowCrossDomain = function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Methods",
@@ -60,7 +60,7 @@ exports.startServer = done => {
       const server = app.listen(process.env.PORT, () =>
         console.log(`server started at port ${process.env.PORT}`)
       );
-      server.timeout = 6000;
+      server.timeout = 10000;
       connectedSocket = require("./socketServer").init(server);
       connectedSocket.watchConnection();
     })
