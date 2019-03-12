@@ -50,8 +50,8 @@ class App extends Component {
     window.addEventListener(
       "storage",
       function() {
-        const userId = localStorage.getItem("userId");
-        if (!userId) {
+        const username = localStorage.getItem("username");
+        if (!username) {
           authState.logoutHandler();
         }
       },

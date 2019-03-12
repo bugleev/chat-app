@@ -13,8 +13,6 @@ class AuthorizationState {
   @observable
   token = null;
   @observable
-  userId = null;
-  @observable
   username = null;
   @observable
   resetAllowed = false;
@@ -33,7 +31,6 @@ class AuthorizationState {
     const response = yield fetchState.fetchAndVerifyResponse(request);
     if (!response) return;
     const data = yield response.json();
-    console.log("data:", data);
     fetchState.fetchStop();
     if (data.success) {
       navigate(`/login`);
@@ -51,13 +48,12 @@ class AuthorizationState {
       this.logoutHandler();
       return;
     }
-    const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
     const remainingMilliseconds =
       new Date(expiryDate).getTime() - new Date().getTime();
-    this.setLoginDetails({ token, id: userId, username });
+    this.setLoginDetails({ token, username });
     this.setAutoLogout(remainingMilliseconds);
-    socketState.connectSocket();
+    socketState.connectSocket(this.token, this.username);
   };
 
   @action
@@ -77,20 +73,19 @@ class AuthorizationState {
     fetchState.fetchStop();
     if (data.success) {
       localStorage.setItem("token", data.body.token);
-      localStorage.setItem("userId", data.body.id);
       localStorage.setItem("username", data.body.username);
-      const remainingMilliseconds = 60 * 60 * 1000;
       const expiryDate = new Date();
       expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+      const remainingMilliseconds =
+        new Date(expiryDate).getTime() - new Date().getTime();
       localStorage.setItem("expiryDate", expiryDate.toISOString());
       this.setAutoLogout(remainingMilliseconds);
       this.setLoginDetails({
         token: data.body.token,
-        id: data.body.id,
         username: data.body.username
       });
       navigate(`/`);
-      socketState.connectSocket();
+      socketState.connectSocket(this.token, this.username);
     }
   });
   @action
@@ -106,7 +101,6 @@ class AuthorizationState {
     });
     const response = yield fetchState.fetchAndVerifyResponse(request);
     if (!response) return;
-    const data = yield response.json();
     yield fetchState.fetchError("Reset token was sent to your email");
     yield fetchState.fetchStop();
   });
@@ -129,7 +123,7 @@ class AuthorizationState {
     }
     const data = yield response.json();
     this.resetAllowed = true;
-    this.userId = data.body.id;
+    localStorage.setItem("reset_id", data.body.id);
     yield navigate(`/reset`);
     yield fetchState.fetchStop();
   });
@@ -137,7 +131,13 @@ class AuthorizationState {
   @action
   resetPassword = flow(function*(requestBody) {
     fetchState.startFetching();
-    requestBody.userId = this.userId;
+    const id = localStorage.getItem("reset_id");
+    if (!id) {
+      fetchState.fetchError("reset token expired!");
+      yield navigate(`/login`);
+      return;
+    }
+    requestBody.userId = id;
     let request = new Request(`/api/reset-password`, {
       method: "POST",
       headers: {
@@ -151,15 +151,15 @@ class AuthorizationState {
     const data = yield response.json();
     this.resetAllowed = false;
     yield navigate(`/login`);
+    yield localStorage.removeItem("reset_id");
     yield fetchState.fetchError(data.body.message);
     yield fetchState.fetchStop();
   });
 
   @action
-  setLoginDetails = ({ token, id, username }) => {
+  setLoginDetails = ({ token, username }) => {
     this.isAuth = true;
     this.token = token;
-    this.userId = id;
     this.username = username;
   };
   @action
@@ -173,10 +173,8 @@ class AuthorizationState {
     socketState.disconnectSocket();
     this.isAuth = false;
     this.token = null;
-    this.userId = null;
     localStorage.removeItem("token");
     localStorage.removeItem("expiryDate");
-    localStorage.removeItem("userId");
     localStorage.removeItem("username");
     navigate(`/login`);
   };

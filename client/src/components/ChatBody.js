@@ -11,7 +11,6 @@ import { getUsernameColor } from "../utils/getUsernameColor";
 class Room extends Component {
   chatList = React.createRef();
   componentDidMount() {
-    console.log("chatNode:");
     const chatNode = this.chatList.current;
     chatNode.addEventListener("scroll", this.fetchMessagesOnscroll);
     document
@@ -94,22 +93,32 @@ class Room extends Component {
                 <span className={chatStyles.systemMessage}>{el.message}</span>
               </div>
             ) : (
-                <div
-                  className={chatStyles.chatLineMessage}
-                  key={el.text + el.user + el.timeStamp}
+              <div
+                className={chatStyles.chatLineMessage}
+                key={el.text + el.user + el.timeStamp}
+              >
+                <span className={chatStyles.timeStamp}>{el.timeStamp}</span>
+                <span
+                  className={chatStyles.userName}
+                  style={{ color: getUsernameColor(el.user) }}
                 >
-                  <span className={chatStyles.timeStamp}>{el.timeStamp}</span>
-                  <span
-                    className={chatStyles.userName}
-                    style={{ color: getUsernameColor(el.user) }}
+                  {el.user}
+                </span>
+                <span style={{ marginRight: 5 }}>:</span>
+                {!el.isFile ? (
+                  <span className={chatStyles.message}>{el.text}</span>
+                ) : (
+                  <button
+                    className={chatStyles.fileMessage}
+                    onClick={() =>
+                      socketState.receiveFile(el.fileLink, el.text)
+                    }
                   >
-                    {el.user}
-                  </span>
-                  <span style={{ marginRight: 5 }}>:</span>
-                  {!el.isFile ? <span className={chatStyles.message}>{el.text}</span> : <button className={chatStyles.fileMessage} onClick={() => socketState.receiveFile(el.user, el.text)}>{el.text}</button>}
-
-                </div>
-              )
+                    {el.text}
+                  </button>
+                )}
+              </div>
+            )
           )}
         </div>
         <UserList />
@@ -130,8 +139,15 @@ class Room extends Component {
           </form>
         </div>
         <div className={chatStyles.fileInput}>
-          <label htmlFor="upload-file" className={chatStyles.fileLabel}>{socketState.fileUploading ? "test!" : "Upload file"}</label>
-          <input type="file" name="file" id="upload-file" onChange={socketState.handleFileUpload} />
+          <label htmlFor="upload-file" className={chatStyles.fileLabel}>
+            {socketState.fileUploading ? "test!" : "Upload file"}
+          </label>
+          <input
+            type="file"
+            name="file"
+            id="upload-file"
+            onChange={socketState.handleFileUpload}
+          />
         </div>
       </React.Fragment>
     );

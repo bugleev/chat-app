@@ -56,7 +56,7 @@ exports.login = async (req, res, next) => {
     );
     return res.status(200).json({
       success: true,
-      body: { token, id: userInDB._id.toString(), username: userInDB.username }
+      body: { token, username: userInDB.username }
     });
   } catch (err) {
     err.statusCode = err.statusCode || 500;

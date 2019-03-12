@@ -1,15 +1,13 @@
-import { observable, action, computed } from "mobx";
+import { observable, action, computed, flow } from "mobx";
 import openSocket from "socket.io-client";
 import { navigate, createHistory } from "@reach/router";
 import { format, isSameDay } from "date-fns";
-import ss from "socket.io-stream";
-import { createWriteStream, supported, version } from 'streamsaver'
+import saveAs from "file-saver";
 
 import { authState, fetchState } from "./";
 
-const generateMessage = (user, id, room, message) => ({
+const generateMessage = (user, room, message) => ({
   user,
-  id,
   room,
   text: escapeHtml(message)
 });
@@ -36,6 +34,7 @@ const insertDatesInMessages = messages => {
 const DEFAULT_ROOM = "world";
 const TYPING_TIMER_LENGTH = 400;
 const MESSAGES_LIMIT = 40;
+
 class SocketIOState {
   socket = null;
   @observable
@@ -72,14 +71,8 @@ class SocketIOState {
     this.socket.destroy();
   };
   @action
-  connectSocket = () => {
-    // read token from local storage and pass it along on connection
-    const token = localStorage.getItem("token");
-    const expiryDate = localStorage.getItem("expiryDate");
-    const username = localStorage.getItem("username");
-    if (!token || !expiryDate) {
-      return;
-    }
+  connectSocket = (token, username) => {
+    // pass jwt token along on connection
     this.socket = openSocket("/", {
       path: "/da_chat",
       query: { token }
@@ -100,7 +93,7 @@ class SocketIOState {
     this.socket.emit(
       "createRoom",
       {
-        userId: authState.userId,
+        username: authState.username,
         room
       },
       // navigate to room on callback from server
@@ -138,17 +131,11 @@ class SocketIOState {
   createMessage = message => {
     this.socket.emit(
       "createMessage",
-      generateMessage(
-        authState.username,
-        authState.userId,
-        this.currentRoom,
-        message
-      )
+      generateMessage(authState.username, this.currentRoom, message)
     );
   };
   @action
   logMessageFromUser = data => {
-    console.log('data:', data)
     this.messages.push(data);
   };
   @action
@@ -195,12 +182,11 @@ class SocketIOState {
     }
   };
   @action
-  handleFileUpload = (e) => {
-    console.log('e:', e.target.files);
-    const file = e.target.files[0]
+  handleFileUpload = e => {
+    const file = e.target.files[0];
     if (file && file.size / 1000000 > 10) {
       e.target.value = "";
-      fetchState.fetchError("Недопустимый размер файла!")
+      fetchState.fetchError("Недопустимый размер файла!");
       return;
     }
     this.uploadedFile = file;
@@ -208,10 +194,8 @@ class SocketIOState {
     this.socket.emit(
       "upload",
       {
-        id: authState.userId,
         room: this.currentRoom,
         filename: file.name,
-        type: file.type,
         user: authState.username
       },
       file,
@@ -221,18 +205,21 @@ class SocketIOState {
     );
   };
   @action
-  receiveFile = (fileOwner, filename) => {
-    if (fileOwner === authState.username) return;
-    this.socket.emit(
-      "transfer.start",
-      {
-        id: authState.userId,
-        room: this.currentRoom,
-        filename,
-        fileOwner
+  receiveFile = flow(function*(fileLink, fileName) {
+    if (fileName === "link expired") return;
+    fetchState.startFetching();
+    let request = new Request(`/api/download/${fileLink}`, {
+      method: "GET",
+      headers: {
+        Authorization: `bearer ${authState.token}`
       }
-    );
-  };
+    });
+    const response = yield fetchState.fetchAndVerifyResponse(request);
+    if (!response) return;
+    const data = yield response.blob();
+    yield saveAs(data, fileName);
+    fetchState.fetchStop();
+  });
   @action
   subscribe = () => {
     this.socket.on("newMessage", (data, cb) => {
@@ -247,23 +234,6 @@ class SocketIOState {
           message: `No messages found...`
         });
       }
-    });
-
-    this.socket.on("transfer.start", ({ filename, recepient }, cb) => {
-      const stream = ss.createStream();
-      // upload a file to the server.
-      ss(this.socket).emit('transfer.progress', stream, { size: this.uploadedFile.size, name: this.uploadedFile.name, recepient });
-      ss.createBlobReadStream(this.uploadedFile).pipe(stream);
-    });
-    ss(this.socket).on("transfer.progress", (s, data) => {
-      console.log('s:', s)
-      const fileStream = createWriteStream(`${data.name}`)
-      console.log('fileStream:', fileStream)
-      const writer = fileStream.getWriter()
-      // s.pipe(chunk => {
-      //   writer(chunk);
-
-      // });
     });
     this.socket.on("reconnect", () => {
       this.joinRoom(this.currentRoom, authState.username);

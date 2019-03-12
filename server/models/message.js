@@ -27,6 +27,11 @@ const messageSchema = new Schema({
     required: true,
     default: false
   },
+  fileLink: {
+    type: String,
+    required: true,
+    default: false
+  }
 });
 messageSchema.index({ created: -1 });
 module.exports = mongoose.model("Message", messageSchema);

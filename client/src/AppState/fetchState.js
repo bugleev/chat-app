@@ -1,9 +1,6 @@
 import { observable, action, computed, flow } from "mobx";
 
 class fetchStatus {
-  constructor() {
-    this.fetchAndVerifyResponse = this.fetchAndVerifyResponse.bind(this);
-  }
   @observable
   isFetching = false;
   @observable
@@ -21,11 +18,10 @@ class fetchStatus {
     this.isFetching = false;
     this.fetchSuccess = true;
   };
-  @action
+  @action.bound
   fetchAndVerifyResponse = flow(function*(request) {
     try {
       const response = yield fetch(request);
-      console.log("response:", response);
       if (!response.ok) {
         const error = yield response.json();
         process.env.NODE_ENV === "development" && console.log(error);

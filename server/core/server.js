@@ -2,16 +2,13 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-
 require("dotenv").config();
-
-const errorController = require("../controllers/error");
 const authRoutes = require("../routes/auth");
-const User = require("../models/user");
-const Room = require("../models/room");
-const SocketServer = require("./socketServer");
+const cleanupJob = require("../util/cleanup");
+
 const app = express();
-const allowCrossDomain = function (req, res, next) {
+
+const allowCrossDomain = function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Methods",
@@ -63,6 +60,7 @@ exports.startServer = done => {
       server.timeout = 10000;
       connectedSocket = require("./socketServer").init(server);
       connectedSocket.watchConnection();
+      cleanupJob.start();
     })
     .catch(err => console.log(err));
   done();

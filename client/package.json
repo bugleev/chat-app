@@ -64,8 +64,8 @@
   },
   "dependencies": {
     "@reach/router": "^1.2.1",
-    "@tanem/react-nprogress": "^1.0.15",
     "date-fns": "^1.30.1",
+    "file-saver": "^2.0.1",
     "formstate": "^1.0.2",
     "node-sass": "^4.11.0",
     "react": "^16.7.0",
@@ -73,8 +73,6 @@
     "react-icons": "^3.4.0",
     "react-loader-spinner": "^2.3.0",
     "react-spinners": "^0.5.1",
-    "socket.io-client": "^2.2.0",
-    "socket.io-stream": "^0.9.1",
-    "streamsaver": "^1.2.0"
+    "socket.io-client": "^2.2.0"
   }
 }
