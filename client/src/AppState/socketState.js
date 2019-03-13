@@ -97,9 +97,8 @@ class SocketIOState {
         room
       },
       // navigate to room on callback from server
-      roomId => {
-        navigate(`/room/${roomId}`);
-        this.changeRoom(roomId);
+      room => {
+        this.joinRoom(room, authState.username);
       }
     );
   };
@@ -205,7 +204,7 @@ class SocketIOState {
     );
   };
   @action
-  receiveFile = flow(function*(fileLink, fileName) {
+  receiveFile = flow(function* (fileLink, fileName) {
     if (fileName === "link expired") return;
     fetchState.startFetching();
     let request = new Request(`/api/download/${fileLink}`, {

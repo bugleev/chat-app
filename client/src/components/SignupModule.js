@@ -17,7 +17,7 @@ class SignupModule extends Component {
     const showError = formState.signupForm.error;
     return (
       <React.Fragment>
-        <h2 />
+        <h2>Chat app</h2>
         <div className={chatStyles.loginWrapper}>
           {fetchState.errorMessage ? (
             <div className={chatStyles.loginErrorWrapper}>
@@ -33,7 +33,7 @@ class SignupModule extends Component {
             <div
               className={`${chatStyles.formField} ${
                 formState.username.error ? chatStyles.error : ""
-              }`}
+                }`}
             >
               <span>
                 <MdPerson />
@@ -48,7 +48,7 @@ class SignupModule extends Component {
             <div
               className={`${chatStyles.formField} ${
                 formState.email.error ? chatStyles.error : ""
-              }`}
+                }`}
             >
               <span>
                 <MdEmail />
@@ -63,7 +63,7 @@ class SignupModule extends Component {
             <div
               className={`${chatStyles.formField} ${
                 formState.signupPassword.error ? chatStyles.error : ""
-              }`}
+                }`}
             >
               <span>
                 <MdLock />
@@ -92,8 +92,8 @@ class SignupModule extends Component {
                   loading={fetchState.isFetching}
                 />
               ) : (
-                "Sign up"
-              )}
+                  "Sign up"
+                )}
             </button>
             {showError ? (
               <div className={chatStyles.formErrorWrapper}>

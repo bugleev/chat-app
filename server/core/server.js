@@ -8,7 +8,7 @@ const cleanupJob = require("../util/cleanup");
 
 const app = express();
 
-const allowCrossDomain = function(req, res, next) {
+const allowCrossDomain = function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Methods",

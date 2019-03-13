@@ -5,7 +5,7 @@ $secondary: #23074d
 $sec_hover: lighten($secondary, 10%)
 $white: #faf9fa
 
-$breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-small": 640px, "tablet": 768px, "tablet-wide": 1024px, "desktop": 1280px, "desktop-wide": 1440px, "desktop-max": 1900px,)
+$breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-small": 640px, "tablet": 769px, "tablet-wide": 1024px, "desktop": 1280px, "desktop-wide": 1440px, "desktop-max": 1900px,)
 
 =mq($width, $type: min)
   @if map_has_key($breakpoints, $width)
@@ -70,30 +70,41 @@ $breakpoints: ("phone": 400px, "phone-wide": 480px, "phablet": 560px, "tablet-sm
     height: 100%    
     background: linear-gradient(to right, #F3F9A7, #CAC531) /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */        
   body 
+    margin: 0
+    height: 100% 
     font-size: 1.6rem
-    font-family: 'chat'    
+    font-family: 'chat'
+  #root
+    height: 100%      
 
 .container
+  height: 100%
   >div 
-    display: flex
-    padding: 2rem
+    height: 100vh
+    display: flex    
     flex-direction: column
     justify-content: center
     align-items: center
+    +mq(phone-wide, max)        
+      height: 100%
+      justify-content: flex-start
 h2, h3, h4
   padding: 0 1rem 
   text-transform: uppercase
   transform: skew(0, -3deg) 
   color: #fefefe      
-  background: linear-gradient(#cc5333, #23074d)
+  background: linear-gradient(#cc5333, #23074d) 
 h2,h3
   font-size: 6rem
 h3, h4
   color: $secondary
   background: linear-gradient(#F3F9A7, #CAC531)
   margin-bottom: 3rem 
+  +mq(phone-wide, max)        
+    margin: 0 auto
+    width: 70px
 h2 
-  margin-top: 2rem
+  margin: 2rem 0 3rem 0  
 .chatButton 
   font-family: "chat"
   padding: 0.4rem 1.8rem
@@ -120,6 +131,8 @@ h2
   background: $secondary
   >div 
     display: flex
+.loginButton
+  margin-top: 1rem    
 .loginButton:hover, .addRoomButton:hover
   background: $sec_hover
 .cancelButton
@@ -144,8 +157,15 @@ h2
   min-width: 500px 
   background-color: $primary
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)
+  +mq(phone-wide, max) 
+    width: 100%       
+    height: 100%
+    min-height: auto
+    min-width: auto
   h4     
     margin: 5rem
+    +mq(phone-wide, max) 
+      width: auto     
 .loginErrorWrapper
   position: absolute
   display: flex
@@ -167,7 +187,9 @@ form
   flex-direction: column
   justify-content: center
   align-items: center
-  padding: 1rem  
+  padding: 1rem
+  +mq(phone-wide, max) 
+    padding-bottom: 0px 
   .formField
     display: flex
     align-items: center
@@ -201,9 +223,7 @@ form
       right: 5px
       text-align: right
     .forgotPassword:hover
-      text-decoration: underline
-  .formField:last-of-type
-    margin-bottom: 3rem
+      text-decoration: underline 
   .formField.error
     input
       border: 2px solid #a53232        
@@ -211,9 +231,11 @@ form
     input:focus 
       border: 2px solid #a53232
       background: #fbcfcf
-      outline: none 
+      outline: none
+    .forgotPassword      
+      color: $white       
     ::placeholder, span
-      color: #a53232   
+      color: #a53232      
 .formErrorWrapper   
   margin-top: 2rem
   padding: 0 1rem
@@ -245,14 +267,28 @@ form
   width: calc(100vw - 20%)
   min-width: 500px 
   background-color: $white
-  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)   
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22) 
+  +mq(tablet, max)
+    width: 100%
+    border-radius: 0
+  +mq(phone-wide, max)
+    width: 100%
+    min-width: auto
+    grid-template-columns: 100%
+    flex-grow: 1
 .currentRoom
   align-self: flex-start
   justify-self: center
   font-size: 1.4rem
   background: lighten($primary, 25%)   
-  padding: 0 0.5rem 
+  padding: 0 0.5rem
+  +mq(phone-wide, max)
+    grid-row: 2
+    justify-self: auto
+    text-align: center
+    border-bottom: 1px solid $primary 
 .chatContent
+  position: relative
   >div
     height: calc(100vh - 150px)
     padding: 1rem 0 0 1rem
@@ -260,6 +296,13 @@ form
     grid-template-columns: 1fr auto
     grid-template-rows: 30px 1fr 
     justify-content: space-between
+    +mq(tablet, max)
+      height: 84vh
+    +mq(phone-wide, max)
+      grid-template-columns: 1fr
+      grid-template-rows: none
+      padding: 1rem
+      height: 100%
 .chatList
   margin-bottom: 1rem
   display: flex
@@ -268,6 +311,9 @@ form
   flex-direction: column
   overflow-y: scroll
   overflow-x: hidden
+  +mq(phone-wide, max)
+    grid-row: 3
+    max-height: 200px
 +custom-scroll("chatList")
 .chatLineMessage   
   padding: 0 0.5rem
@@ -306,11 +352,20 @@ form
   grid-row: span 2 / 3
   flex-direction: column
   align-items: center
+  +mq(phone-wide, max)
+    grid-row: 1
+    width: 100%
+    justify-self: auto
+    text-align: center
+    border-bottom: 1px solid $primary 
   .chatUsersHeader
     background: lighten($primary, 25%) 
     width: 85%
     text-align: center
-    margin-bottom: 1rem 
+    margin-bottom: 1rem
+    +mq(phone-wide, max)        
+      border-bottom: 1px solid $primary
+      width: 100% 
   ul    
     list-style: none
     padding: 0 0.5rem
@@ -321,6 +376,9 @@ form
       font-size: 1.4rem
       overflow-x: hidden
       text-overflow: ellipsis
+      +mq(phone-wide, max)
+        width: 100%
+        text-align: center
     li.typing 
       white-space: nowrap
       background: #f3f9a763           
@@ -350,19 +408,28 @@ form
   display: flex
   padding: 1rem 0
   justify-content: center
+  +mq(phone-wide, max) 
+    padding-bottom: 0px 
 +custom-scroll("chatList")   
 .fileInput 
   display: flex
   justify-content: center
   align-items: flex-start
+  +mq(phone-wide, max) 
+    position: absolute
+    bottom: 8px
+    right: 12px 
   input
     opacity: 0
+    width: 1px
     position: absolute
     z-index: -1
 .fileLabel
   composes: chatButton
   margin-top: 1rem 
   padding: 1.8rem 0.8rem
+  +mq(phone-wide, max) 
+    padding: 0.5rem 0.8rem 
 
 .menuWrapper
   display: flex
@@ -374,6 +441,10 @@ form
   border-radius: 5px 0 0 5px
   background-color: darken($primary, 15%)
   padding: 1rem
+  +mq(tablet, max)  
+    border-radius: 0
+  +mq(phone-wide, max)
+    width: 100%  
   .accountInfo   
     width: 100%
     display: flex
@@ -423,11 +494,18 @@ form
     width: 100%
     background-color: #8f3a24
     >div
-      width: 100%   
+      width: 100%
+      +mq(phone-wide, max)
+        display: flex
+        flex-direction: column
       .roomScroll
         padding: 1rem 0
         overflow-x: hidden   
-        max-height: 400px         
+        max-height: 400px
+        +mq(phone-wide, max)
+          display: flex
+          overflow-x: auto
+          padding: 1rem         
         button 
           position: relative
           width: 90%
@@ -443,7 +521,15 @@ form
           text-decoration: none
           background-color: darken($primary, 15%)
           cursor: pointer
-          background-color: $pr_hover       
+          background-color: $pr_hover
+          +mq(phone-wide, max)
+            display: inline
+            padding: 0 2px
+            min-width: 50px
+            margin-right: 5px
+            white-space: nowrap
+            overflow-x: hidden
+            text-overflow: ellipsis    
           .activeRoom 
             position: absolute
             right: -5px
@@ -462,6 +548,10 @@ form
 .addRoomWrapper  
   height: calc(100vh - 150px)
   padding: 1rem 0 0 1rem
+  +mq(tablet, max)
+    height: 84vh
+  +mq(phone-wide, max)        
+    height: 100%  
   .addRoomControls
     display: flex
     width: 220px 

@@ -17,7 +17,9 @@ const ChatModule = observer(({ authState, fetchState }) => (
   <React.Fragment>
     {authState.isAuth ? (
       <React.Fragment>
-        <h2 className={chatStyles.title} />
+        <h2 className={chatStyles.title} >
+          .
+        </h2>
         <div className={chatStyles.chatWrapper}>
           {fetchState.errorMessage ? (
             <div className={chatStyles.loginErrorWrapper}>
@@ -33,8 +35,8 @@ const ChatModule = observer(({ authState, fetchState }) => (
         </div>
       </React.Fragment>
     ) : (
-      <Redirect to="/login" noThrow />
-    )}
+        <Redirect to="/login" noThrow />
+      )}
   </React.Fragment>
 ));
 // eslint-disable-next-line
@@ -49,7 +51,7 @@ class App extends Component {
     // handle all open instances of the app on logout
     window.addEventListener(
       "storage",
-      function() {
+      function () {
         const username = localStorage.getItem("username");
         if (!username) {
           authState.logoutHandler();
@@ -58,7 +60,7 @@ class App extends Component {
       false
     );
   }
-  componentDidUpdate() {}
+  componentDidUpdate() { }
   render() {
     return (
       <div className={chatStyles.container}>
