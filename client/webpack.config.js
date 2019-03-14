@@ -22,25 +22,14 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 
 module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
   const isEnvProduction = mode === "production";
-
-  const publicPath = "/";
-
-  const publicUrl = isEnvProduction ? publicPath.slice(0, -1) : "";
-  // Some apps do not use client-side routing with pushState.
-  // For these, "homepage" can be set to "." to enable relative asset paths.
-  const shouldUseRelativeAssetPaths = publicPath === "./";
   // Get environment variables to inject into our app.
-  const env = getClientEnvironment(publicUrl);
+  const env = getClientEnvironment("");
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
       !isEnvProduction && require.resolve("style-loader"),
       isEnvProduction && {
-        loader: MiniCssExtractPlugin.loader,
-        options: Object.assign(
-          {},
-          shouldUseRelativeAssetPaths ? { publicPath: "../../" } : undefined
-        )
+        loader: MiniCssExtractPlugin.loader
       },
       {
         loader: require.resolve("css-loader"),

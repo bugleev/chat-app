@@ -6,7 +6,7 @@ const ManifestPlugin = require("webpack-manifest-plugin");
 const paths = require("./paths");
 
 module.exports = () => {
-  const publicPath = paths.servedPath;
+  const publicPath = "/";
   return {
     bail: true,
     devtool: false,
