@@ -39,7 +39,6 @@ class fetchStatus {
   });
   @action
   fetchError = text => {
-    console.log("text:", text);
     this.disposer();
     this.isFetching = false;
     this.fetchSuccess = false;

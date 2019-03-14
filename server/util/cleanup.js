@@ -23,7 +23,6 @@ const cleanFolder = () => {
             if (err) {
               return console.error(err);
             }
-            console.log("successfully deleted");
           });
         }
       });

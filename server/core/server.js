@@ -3,12 +3,13 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 require("dotenv").config();
-const authRoutes = require("../routes/auth");
+const serverPath = require("../util/path");
+const appRoutes = require("../routes");
 const cleanupJob = require("../util/cleanup");
 
 const app = express();
 
-const allowCrossDomain = function (req, res, next) {
+const allowCrossDomain = function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Methods",
@@ -17,26 +18,14 @@ const allowCrossDomain = function (req, res, next) {
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 };
+
 app.use(allowCrossDomain);
-
-// app.use(express.static(path.join(__dirname, "../../client")));
-
-// app.get("/", (req, res, next) => res.sendFile(__dirname + "./index.html"));
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-// app.use((req, res, next) => {
-//   var err = null;
-//   try {
-//     decodeURIComponent(req.path);
-//   } catch (e) {
-//     const error = new Error("Invalid URL!");
-//     error.statusCode = 400;
-//     next(error);
-//   }
-// });
-app.use(authRoutes);
-// handle server errors
+app.use(appRoutes);
+
+// handle server errors ('next' needs to be in params to work)
+// eslint-disable-next-line
 app.use((error, req, res, next) => {
   const { statusCode = 500, message = "", data = [] } = error;
   const details = data.length
@@ -46,6 +35,14 @@ app.use((error, req, res, next) => {
     message: `${message}${details}`
   });
 });
+
+// serve react files in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(serverPath, "../client/build")));
+  app.get("*", (req, res) =>
+    res.sendFile(serverPath + "../client/build/index.html")
+  );
+}
 
 exports.startServer = done => {
   let connectedSocket;
@@ -57,19 +54,14 @@ exports.startServer = done => {
       const server = app.listen(process.env.PORT, () =>
         console.log(`server started at port ${process.env.PORT}`)
       );
+      // this line solves some socketio reconnect bugs
       server.timeout = 10000;
+
       connectedSocket = require("./socketServer").init(server);
       connectedSocket.watchConnection();
+      // start cron job for clearing uploads folder
       cleanupJob.start();
     })
     .catch(err => console.log(err));
   done();
 };
-
-// exports.stopServer = done => {
-//   ioServer.close(() => {
-//     httpServer.close(() => {
-//       done();
-//     });
-//   });
-// };

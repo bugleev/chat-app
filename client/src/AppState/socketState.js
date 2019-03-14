@@ -204,10 +204,10 @@ class SocketIOState {
     );
   };
   @action
-  receiveFile = flow(function* (fileLink, fileName) {
+  receiveFile = flow(function*(fileLink, fileName) {
     if (fileName === "link expired") return;
     fetchState.startFetching();
-    let request = new Request(`/api/download/${fileLink}`, {
+    let request = new Request(`/download/${fileLink}`, {
       method: "GET",
       headers: {
         Authorization: `bearer ${authState.token}`
@@ -221,10 +221,10 @@ class SocketIOState {
   });
   @action
   subscribe = () => {
-    this.socket.on("newMessage", (data, cb) => {
+    this.socket.on("newMessage", data => {
       this.logMessageFromUser(data);
     });
-    this.socket.on("populateMessagesFromDB", ({ messages }, cb) => {
+    this.socket.on("populateMessagesFromDB", ({ messages }) => {
       if (messages.length) {
         this.messages.unshift(...insertDatesInMessages(messages));
       } else {
@@ -238,25 +238,24 @@ class SocketIOState {
       this.joinRoom(this.currentRoom, authState.username);
       console.log("you have been reconnected");
     });
-    this.socket.on("disconnect", (data, cb) => {
+    this.socket.on("disconnect", data => {
       console.log("disconnect:", data);
     });
-    this.socket.on("error", (error, cb) => {
-      console.log("error:", error);
+    this.socket.on("error", error => {
       if (error.type == "UnauthorizedError" || error.code == "invalid_token") {
         authState.logoutHandler();
       }
     });
-    this.socket.on("appError", (error, cb) => {
+    this.socket.on("appError", error => {
       fetchState.fetchError(error.message || "server error!");
       if (error.message === "No room found with that name!") {
         this.joinRoom(this.currentRoom, authState.username);
       }
     });
-    this.socket.on("updateUserList", (data, cb) => {
+    this.socket.on("updateUserList", data => {
       this.updateUserList(data);
     });
-    this.socket.on("updateRoomList", (data, cb) => {
+    this.socket.on("updateRoomList", data => {
       this.roomList = data.rooms;
     });
     this.socket.on("typing", data => {

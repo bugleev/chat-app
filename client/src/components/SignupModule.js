@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { MdLock, MdPerson, MdEmail } from "react-icons/md";
 import { BeatLoader } from "react-spinners";
 import { observer } from "mobx-react";
-import { Link } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
 import { formState, fetchState } from "../AppState";
 
@@ -33,7 +32,7 @@ class SignupModule extends Component {
             <div
               className={`${chatStyles.formField} ${
                 formState.username.error ? chatStyles.error : ""
-                }`}
+              }`}
             >
               <span>
                 <MdPerson />
@@ -48,7 +47,7 @@ class SignupModule extends Component {
             <div
               className={`${chatStyles.formField} ${
                 formState.email.error ? chatStyles.error : ""
-                }`}
+              }`}
             >
               <span>
                 <MdEmail />
@@ -63,7 +62,7 @@ class SignupModule extends Component {
             <div
               className={`${chatStyles.formField} ${
                 formState.signupPassword.error ? chatStyles.error : ""
-                }`}
+              }`}
             >
               <span>
                 <MdLock />
@@ -92,8 +91,8 @@ class SignupModule extends Component {
                   loading={fetchState.isFetching}
                 />
               ) : (
-                  "Sign up"
-                )}
+                "Sign up"
+              )}
             </button>
             {showError ? (
               <div className={chatStyles.formErrorWrapper}>

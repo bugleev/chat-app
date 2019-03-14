@@ -1,5 +1,5 @@
 const express = require("express");
-const { check, body } = require("express-validator/check");
+const { body } = require("express-validator/check");
 
 const authController = require("../controllers/auth");
 const socketController = require("../controllers/socket");
@@ -9,7 +9,7 @@ const User = require("../models/user");
 const router = express.Router();
 
 router.post(
-  "/signup",
+  "/auth/signup",
   [
     body("email")
       .isEmail()
@@ -32,9 +32,9 @@ router.post(
   ],
   authController.signup
 );
-router.post("/login", authController.login);
+router.post("/auth/login", authController.login);
 router.post(
-  "/forgot-password",
+  "/auth/forgot-password",
   [
     body("email")
       .isEmail()
@@ -44,7 +44,7 @@ router.post(
   authController.sendResetToken
 );
 router.post(
-  "/reset-password",
+  "/auth/reset-password",
   [
     body("password")
       .trim()
@@ -59,7 +59,7 @@ router.post(
   ],
   authController.resetPassword
 );
-router.post("/reset-password/token", authController.verifyToken);
+router.post("/auth/reset-password/token", authController.verifyToken);
 router.get("/download/:link", isAuth, socketController.downloadFile);
 
 module.exports = router;

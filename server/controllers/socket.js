@@ -82,7 +82,7 @@ exports.leaveRoomAndUpdateUserList = function(socket) {
     .to(user.room)
     .emit("newMessage", { system: true, message: `${user.name} left...` });
 };
-exports.messageHandler = async function(socket, request, cb) {
+exports.messageHandler = async function(socket, request) {
   try {
     request.created = Date.now();
     if (!request.text) throw new Error("No message provided!");
@@ -183,14 +183,14 @@ exports.populateMessages = async function(socket, { limit, skip, room }) {
     }));
   socket.emit("populateMessagesFromDB", { messages: formattedMessages });
 };
-exports.typingHandler = function(socket, request) {
+exports.typingHandler = function(socket) {
   const user = userList.getUser(socket.id);
   if (!user) return;
   socket.broadcast.to(user.room).emit("typing", {
     user: user.name
   });
 };
-exports.stopTypingHandler = function(socket, request) {
+exports.stopTypingHandler = function(socket) {
   const user = userList.getUser(socket.id);
   if (!user) return;
   socket.broadcast.to(user.room).emit("stop typing", {
@@ -199,11 +199,9 @@ exports.stopTypingHandler = function(socket, request) {
 };
 exports.onErrorHandler = function(socket, error) {
   // emit different type of error event to handle it on the UI, on the "error" type socket would just close
-  console.log("Error in socket", error);
   socket.emit("appError", error);
 };
 
 exports.onDisconnectHandler = function(socket) {
-  console.log("Disconnected", "Socket disconnected");
   this.leaveRoomAndUpdateUserList(socket);
 };

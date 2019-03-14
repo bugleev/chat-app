@@ -70,18 +70,14 @@ export class formState {
   });
 
   clearForm = () => {
-    //this.loginForm.reset();
+    this.loginForm.reset();
   };
   onSubmit = async (e, form) => {
     e.preventDefault();
-    //  Validate all fields
     const res = await this[form].validate();
-    // If any errors you would know
     if (res.hasError) {
-      console.log(this[form].error);
       return;
     }
-    // Yay .. all good. Do what you want with it
     switch (form) {
       case "signupForm":
         authState.signupUser({
@@ -117,6 +113,6 @@ export class formState {
         this.clearForm();
         break;
     }
-    this.clearForm(); // Validated value!
+    this.clearForm();
   };
 }

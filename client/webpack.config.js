@@ -83,7 +83,6 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
     {
       mode,
       stats: {
-        // copied from `'minimal'`
         all: false,
         assets: true,
         builtAt: true,
@@ -91,49 +90,30 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
         maxModules: 0,
         errors: true,
         warnings: true,
-        // our additional options
         moduleTrace: true,
         errorDetails: true
       },
       entry: [paths.appIndexJs].filter(Boolean),
       optimization: {
-        // Automatically split vendor and commons
-        // https://twitter.com/wSokra/status/969633336732905474
-        // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
         splitChunks: {
           chunks: "all",
           name: false
         },
-        // Keep the runtime chunk separated to enable long term caching
-        // https://twitter.com/wSokra/status/969679223278505985
         runtimeChunk: true
       },
       resolve: {
-        // This allows you to set a fallback for where Webpack should look for modules.
-        // We placed these paths second because we want `node_modules` to "win"
-        // if there are any conflicts. This matches Node resolution mechanism.
-        // https://github.com/facebook/create-react-app/issues/253
         modules: ["node_modules"].concat(
           // It is guaranteed to exist because we tweak it in `env.js`
           process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
         ),
-        // These are the reasonable defaults supported by the Node ecosystem.
-        // We also include JSX as a common component filename extension to support
-        // some tools, although we do not recommend using it, see:
-        // https://github.com/facebook/create-react-app/issues/290
-        // `web` extension prefixes have been added for better support
-        // for React Native Web.
         extensions: paths.moduleFileExtensions.map(ext => `.${ext}`),
         alias: {
-          // Support React Native Web
-          // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
           "react-native": "react-native-web"
         }
       },
       module: {
         strictExportPresence: true,
         rules: [
-          // Disable require.ensure as it's not a standard language feature.
           { parser: { requireEnsure: false } },
           {
             // "oneOf" will traverse all following loaders until one will
@@ -195,11 +175,6 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
                   compact: false,
                   cacheDirectory: true,
                   cacheCompression: isEnvProduction,
-
-                  // If an error happens in a package, it's possible to be
-                  // because it was compiled. Thus, we don't want the browser
-                  // debugger to show the original code. Instead, the code
-                  // being evaluated would be much more helpful.
                   sourceMaps: false
                 }
               },
@@ -217,10 +192,6 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
                   importLoaders: 1,
                   sourceMap: false
                 }),
-                // Don't consider CSS imports dead code even if the
-                // containing package claims to have no side effects.
-                // Remove this when webpack adds a warning or an error for this.
-                // See https://github.com/webpack/webpack/issues/6571
                 sideEffects: true
               },
               // Adds support for CSS Modules (https://github.com/css-modules/css-modules)
@@ -247,10 +218,6 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
                   },
                   "sass-loader"
                 ),
-                // Don't consider CSS imports dead code even if the
-                // containing package claims to have no side effects.
-                // Remove this when webpack adds a warning or an error for this.
-                // See https://github.com/webpack/webpack/issues/6571
                 sideEffects: true
               },
               // Adds support for CSS Modules, but using SASS
@@ -290,7 +257,6 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
         ]
       },
       plugins: [
-        // Generates an `index.html` file with the <script> injected.
         new HtmlWebpackPlugin(
           Object.assign(
             {},
@@ -321,8 +287,6 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
         new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
         new webpack.DefinePlugin(env.stringified)
       ].filter(Boolean),
-      // Some libraries import Node modules but don't use them in the browser.
-      // Tell Webpack to provide empty mocks for them so importing them works.
       node: {
         dgram: "empty",
         fs: "empty",
@@ -330,8 +294,6 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
         tls: "empty",
         child_process: "empty"
       }
-      // Turn off performance processing because we utilize
-      // our own hints via the FileSizeReporter
     },
     modeConfig({ mode, presets }),
     loadPresets({ mode, presets })

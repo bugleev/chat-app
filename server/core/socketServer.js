@@ -18,7 +18,6 @@ class SocketServer {
         })
       )
       .on("connection", socket => {
-        console.log(`Socket connected - ${socket.id}`);
         this.subscribe(socket);
         socketController.updateRoomList(socket);
       });

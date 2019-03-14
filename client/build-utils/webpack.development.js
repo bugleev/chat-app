@@ -1,6 +1,6 @@
 const webpack = require("webpack");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
-const ENDPOINT = require("../config").serverPath;
+const SERVER_URL = require("../config").serverPath;
 
 module.exports = () => {
   const publicPath = "/";
@@ -21,13 +21,15 @@ module.exports = () => {
       overlay: true,
       clientLogLevel: "warning",
       proxy: {
-        "/api": {
-          target: ENDPOINT,
-          pathRewrite: { "^/api": "" }
-        },
         "/da_chat": {
-          target: ENDPOINT,
+          target: SERVER_URL,
           ws: true
+        },
+        "/auth/": {
+          target: SERVER_URL
+        },
+        "/download/": {
+          target: SERVER_URL
         }
       }
     },
