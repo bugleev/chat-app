@@ -113,6 +113,5 @@ export class formState {
         this.clearForm();
         break;
     }
-    this.clearForm();
   };
 }

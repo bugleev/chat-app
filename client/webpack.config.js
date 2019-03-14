@@ -23,16 +23,15 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
   const isEnvProduction = mode === "production";
 
-  const publicPath = isEnvProduction ? paths.servedPath : "/";
+  const publicPath = "/";
 
   const publicUrl = isEnvProduction ? publicPath.slice(0, -1) : "";
   // Some apps do not use client-side routing with pushState.
   // For these, "homepage" can be set to "." to enable relative asset paths.
   const shouldUseRelativeAssetPaths = publicPath === "./";
-  // common function to get style loaders
   // Get environment variables to inject into our app.
   const env = getClientEnvironment(publicUrl);
-
+  // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
       !isEnvProduction && require.resolve("style-loader"),
@@ -106,7 +105,15 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
           // It is guaranteed to exist because we tweak it in `env.js`
           process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
         ),
-        extensions: paths.moduleFileExtensions.map(ext => `.${ext}`),
+        extensions: [
+          "web.mjs",
+          "mjs",
+          "web.js",
+          "js",
+          "json",
+          "web.jsx",
+          "jsx"
+        ].map(ext => `.${ext}`),
         alias: {
           "react-native": "react-native-web"
         }
