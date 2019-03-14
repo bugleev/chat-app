@@ -1,5 +1,4 @@
 const webpack = require("webpack");
-const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const SERVER_URL = require("../config").serverPath;
 
 module.exports = () => {
@@ -33,9 +32,6 @@ module.exports = () => {
         }
       }
     },
-    plugins: [
-      new webpack.HotModuleReplacementPlugin(),
-      new CaseSensitivePathsPlugin()
-    ].filter(Boolean)
+    plugins: [new webpack.HotModuleReplacementPlugin()]
   };
 };

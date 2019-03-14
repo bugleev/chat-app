@@ -1,7 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const InlineChunkHtmlPlugin = require("./build-utils/plugins/InlineChunkHtmlPlugin");
 const getCSSModuleLocalIdent = require("./build-utils/plugins/getCSSModuleLocalIdent");
-const InterpolateHtmlPlugin = require("./build-utils/plugins/InterpolateHtmlPlugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpack = require("webpack");
 const webpackMerge = require("webpack-merge");
@@ -260,36 +259,12 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
               inject: true,
               template: paths.appHtml,
               favicon: "./public/favicon.png"
-            },
-            isEnvProduction
-              ? {
-                  minify: {
-                    removeComments: true,
-                    collapseWhitespace: true,
-                    removeRedundantAttributes: true,
-                    useShortDoctype: true,
-                    removeEmptyAttributes: true,
-                    removeStyleLinkTypeAttributes: true,
-                    keepClosingSlash: true,
-                    minifyJS: true,
-                    minifyCSS: true,
-                    minifyURLs: true
-                  }
-                }
-              : undefined
+            }
           )
         ),
         new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
-        new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
         new webpack.DefinePlugin(env.stringified)
-      ].filter(Boolean),
-      node: {
-        dgram: "empty",
-        fs: "empty",
-        net: "empty",
-        tls: "empty",
-        child_process: "empty"
-      }
+      ]
     },
     modeConfig({ mode, presets }),
     loadPresets({ mode, presets })
