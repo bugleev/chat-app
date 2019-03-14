@@ -1,7 +1,8 @@
 import { observable, action, computed, flow } from "mobx";
 import openSocket from "socket.io-client";
 import { navigate, createHistory } from "@reach/router";
-import { format, isSameDay } from "date-fns";
+import format from "date-fns/format";
+import isSameDay from "date-fns/is_same_day";
 import saveAs from "file-saver";
 
 import { authState, fetchState } from "./";
