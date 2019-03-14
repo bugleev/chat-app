@@ -205,7 +205,7 @@ class SocketIOState {
     );
   };
   @action
-  receiveFile = flow(function*(fileLink, fileName) {
+  receiveFile = flow(function* (fileLink, fileName) {
     if (fileName === "link expired") return;
     fetchState.startFetching();
     let request = new Request(`/download/${fileLink}`, {
@@ -260,9 +260,11 @@ class SocketIOState {
       this.roomList = data.rooms;
     });
     this.socket.on("typing", data => {
+      if (data.user === authState.username) return;
       this.updateTypingUser({ name: data.user, typing: true });
     });
     this.socket.on("stop typing", data => {
+      if (data.user === authState.username) return;
       this.updateTypingUser({ name: data.user, typing: false });
     });
   };

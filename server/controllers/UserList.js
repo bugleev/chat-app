@@ -6,7 +6,7 @@ class UserList {
     // if user connects from other socket, replace him
     const userInList = this.users.find(el => el.name === userData.name);
     if (userInList) {
-      this.removeUser(userInList.socketId);
+      return;
     }
     this.users.push(userData);
   }

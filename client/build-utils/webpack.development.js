@@ -18,7 +18,6 @@ module.exports = () => {
       hot: true,
       open: true,
       overlay: true,
-      clientLogLevel: "warning",
       proxy: {
         "/da_chat": {
           target: SERVER_URL,
