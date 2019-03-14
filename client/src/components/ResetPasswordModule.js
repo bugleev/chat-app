@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { MdLock, MdEmail } from "react-icons/md";
-import { BeatLoader } from "react-spinners";
+import BeatLoader from "react-spinners/BeatLoader";
 import { observer, Provider, inject } from "mobx-react";
-import { Link } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
 import { formState, fetchState, authState } from "../AppState";
 

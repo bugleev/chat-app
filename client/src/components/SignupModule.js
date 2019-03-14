@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { MdLock, MdPerson, MdEmail } from "react-icons/md";
-import { BeatLoader } from "react-spinners";
+import BeatLoader from "react-spinners/BeatLoader";
 import { observer } from "mobx-react";
 import chatStyles from "../styles/Chat.module.sass";
 import { formState, fetchState } from "../AppState";

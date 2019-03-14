@@ -1,9 +1,10 @@
 {
-  "name": "webpack-config-2019",
+  "name": "da-chat",
   "version": "1.0.0",
-  "description": "Modern webpack config",
+  "description": "Chat application",
   "author": "abugleev",
   "private": true,
+  "sideEffects": false,
   "scripts": {
     "webpack-dev-server": "webpack-dev-server --info=false",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
