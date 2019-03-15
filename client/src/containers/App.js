@@ -12,6 +12,7 @@ import { authState, fetchState } from "../AppState";
 import ResetPasswordModule from "../components/ResetPasswordModule";
 
 authState.readUserFromLocalStorage();
+
 const UnmatchedRoute = () => <Redirect to="/" noThrow />;
 
 const ChatModule = observer(({ authState, fetchState }) => (
@@ -38,12 +39,6 @@ const ChatModule = observer(({ authState, fetchState }) => (
     )}
   </React.Fragment>
 ));
-// eslint-disable-next-line
-const DefaultPage = () => (
-  <div>
-    Default Page
-  </div>
-);
 
 class App extends Component {
   componentDidMount() {
