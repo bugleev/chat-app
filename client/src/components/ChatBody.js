@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Router, Redirect } from "@reach/router";
 
 import chatStyles from "../styles/Chat.module.sass";
-import { Room } from "./Room";
+import Room from "./Room";
 
 const UnmatchedRoute = () => <Redirect to="/" noThrow />;
 export default class ChatBody extends Component {

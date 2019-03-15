@@ -1,12 +1,11 @@
 import { observable, action, computed, flow } from "mobx";
 import { navigate } from "@reach/router";
-import { socketState } from "./socketState";
-import { fetchState } from "./fetchState";
+import { socketState, fetchState } from "./";
 
 class AuthorizationState {
   constructor() {
     // get data from local storage on startup
-    this.readUserFromLocalStorage();
+    // this.readUserFromLocalStorage();
   }
   @observable
   isAuth = false;

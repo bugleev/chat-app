@@ -40,7 +40,7 @@ app.use((error, req, res, next) => {
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(serverPath, "../client/build")));
   app.get("*", (req, res) =>
-    res.sendFile(serverPath + "../client/build/index.html")
+    res.sendFile(path.join(serverPath, "../client/build/index.html"))
   );
 }
 

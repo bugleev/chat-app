@@ -22,18 +22,18 @@ module.exports = () => {
         new TerserPlugin({
           parallel: true,
           cache: true,
-          sourceMap: false
+          sourceMap: true
         }),
         new OptimizeCSSAssetsPlugin({
           cssProcessorOptions: {
             parser: safePostCssParser,
-            map: false
+            map: true
           }
         })
       ],
       splitChunks: {
         chunks: "all",
-        name: false
+        name: true
       },
       runtimeChunk: true
     },

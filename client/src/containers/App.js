@@ -11,6 +11,7 @@ import SignupModule from "../components/SignupModule";
 import { authState, fetchState } from "../AppState";
 import ResetPasswordModule from "../components/ResetPasswordModule";
 
+authState.readUserFromLocalStorage();
 const UnmatchedRoute = () => <Redirect to="/" noThrow />;
 
 const ChatModule = observer(({ authState, fetchState }) => (

@@ -166,7 +166,7 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
                   compact: false,
                   cacheDirectory: true,
                   cacheCompression: isEnvProduction,
-                  sourceMaps: false
+                  sourceMaps: true
                 }
               },
               // "postcss" loader applies autoprefixer to our CSS.
