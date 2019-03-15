@@ -4,7 +4,6 @@ const getCSSModuleLocalIdent = require("./build-utils/plugins/getCSSModuleLocalI
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpack = require("webpack");
 const webpackMerge = require("webpack-merge");
-const path = require("path");
 
 const paths = require("./build-utils/paths");
 const getClientEnvironment = require("./build-utils/env");
@@ -89,10 +88,7 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
         runtimeChunk: true
       },
       resolve: {
-        modules: ["node_modules"].concat(
-          // It is guaranteed to exist because we tweak it in `env.js`
-          process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
-        ),
+        modules: ["node_modules"],
         extensions: [
           "web.mjs",
           "mjs",

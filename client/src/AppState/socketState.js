@@ -205,7 +205,7 @@ class SocketIOState {
     );
   };
   @action
-  receiveFile = flow(function* (fileLink, fileName) {
+  receiveFile = flow(function*(fileLink, fileName) {
     if (fileName === "link expired") return;
     fetchState.startFetching();
     let request = new Request(`/download/${fileLink}`, {

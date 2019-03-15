@@ -9,7 +9,7 @@ const userList = require("./UserList");
 const isOlderThan = (created, interval) =>
   Date.now() - new Date(created).getTime() > 1000 * 60 * 60 * 24 * interval;
 
-exports.createRoomHandler = async function (socket, request, cb) {
+exports.createRoomHandler = async function(socket, request, cb) {
   try {
     const { username, room } = request;
     if (!room) throw new Error("No room provided!");
@@ -33,7 +33,7 @@ exports.createRoomHandler = async function (socket, request, cb) {
     socket.emit("error", { message: message || error.message });
   }
 };
-exports.updateRoomList = async function (socket) {
+exports.updateRoomList = async function(socket) {
   // emit to all on room create, otherwise update only socket
   const emitTarget = socket || this.ioServer;
   try {
@@ -43,7 +43,7 @@ exports.updateRoomList = async function (socket) {
     emitTarget.emit("error", error);
   }
 };
-exports.joinRoomHandler = async function (socket, request, cb) {
+exports.joinRoomHandler = async function(socket, request, cb) {
   try {
     // leave current room
     this.leaveRoomAndUpdateUserList(socket);
@@ -59,9 +59,7 @@ exports.joinRoomHandler = async function (socket, request, cb) {
       room: request.room
     });
     const roomUserList = userList.getUserList(request.room);
-    this.ioServer
-      .to(request.room)
-      .emit("updateUserList", roomUserList);
+    this.ioServer.to(request.room).emit("updateUserList", roomUserList);
     // broadcast the join event only on one open connection
     if (!roomUserList.includes(request.user)) {
       socket.broadcast.to(request.room).emit("newMessage", {
@@ -75,23 +73,22 @@ exports.joinRoomHandler = async function (socket, request, cb) {
   }
 };
 
-exports.leaveRoomAndUpdateUserList = function (socket) {
+exports.leaveRoomAndUpdateUserList = function(socket) {
   const user = userList.removeUser(socket.id);
   if (!user) return;
   socket.leave(user.room);
-  const roomUserList = userList.getUserList(user.room)
+  const roomUserList = userList.getUserList(user.room);
   this.ioServer
     .to(user.room)
     .emit("updateUserList", userList.getUserList(user.room));
-  // broadcast the leave event only on one open connection 
+  // broadcast the leave event only on one open connection
   if (!roomUserList.includes(user.name)) {
     socket.broadcast
       .to(user.room)
       .emit("newMessage", { system: true, message: `${user.name} left...` });
   }
-
 };
-exports.messageHandler = async function (socket, request) {
+exports.messageHandler = async function(socket, request) {
   try {
     request.created = Date.now();
     if (!request.text) throw new Error("No message provided!");
@@ -109,13 +106,13 @@ exports.messageHandler = async function (socket, request) {
     socket.emit("error", error);
   }
 };
-exports.uploadFileMessage = function (socket, request, file, cb) {
+exports.uploadFileMessage = function(socket, request, file, cb) {
   try {
     if (!request.filename) throw new Error("No file provided!");
     const splitName = request.filename.split(".");
     const downloadLink = `${splitName[0]}_${new Date().getTime().toString()}.${
       splitName[1]
-      }`;
+    }`;
     var stream = fs.createWriteStream(
       path.join(serverPath, process.env.UPLOADS_DIR, downloadLink)
     );
@@ -160,7 +157,7 @@ exports.downloadFile = (req, res, next) => {
   });
 };
 
-exports.populateMessages = async function (socket, { limit, skip, room }) {
+exports.populateMessages = async function(socket, { limit, skip, room }) {
   /*
    * 1. Populate virtual field on provided room, and populate author field in found messages
    * 2. Set limit and skip options from request
@@ -192,25 +189,25 @@ exports.populateMessages = async function (socket, { limit, skip, room }) {
     }));
   socket.emit("populateMessagesFromDB", { messages: formattedMessages });
 };
-exports.typingHandler = function (socket) {
+exports.typingHandler = function(socket) {
   const user = userList.getUser(socket.id);
   if (!user) return;
   socket.broadcast.to(user.room).emit("typing", {
     user: user.name
   });
 };
-exports.stopTypingHandler = function (socket) {
+exports.stopTypingHandler = function(socket) {
   const user = userList.getUser(socket.id);
   if (!user) return;
   socket.broadcast.to(user.room).emit("stop typing", {
     user: user.name
   });
 };
-exports.onErrorHandler = function (socket, error) {
+exports.onErrorHandler = function(socket, error) {
   // emit different type of error event to handle it on the UI, on the "error" type socket would just close
   socket.emit("appError", error);
 };
 
-exports.onDisconnectHandler = function (socket) {
+exports.onDisconnectHandler = function(socket) {
   this.leaveRoomAndUpdateUserList(socket);
 };
