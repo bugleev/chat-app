@@ -18,7 +18,4 @@ WORKDIR /chat
 COPY . ./
 WORKDIR /chat/server
 RUN yarn client-prod
-ENV NODE_ENV=production
-CMD [ "yarn", "server" ]
-
 

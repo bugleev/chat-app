@@ -79,7 +79,7 @@ module.exports = ({ mode, presets } = { mode: "production", presets: [] }) => {
         moduleTrace: true,
         errorDetails: true
       },
-      entry: [paths.appIndexJs].filter(Boolean),
+      entry: [paths.appIndexJs],
       optimization: {
         splitChunks: {
           chunks: "all",
