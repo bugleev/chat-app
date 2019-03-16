@@ -2,18 +2,18 @@ version: "3.1"
 services:
   
   nginx:
-    image: nginx:alpine
+    build: 
+      context: ./client
+    restart: always 
     ports:
-      - "8000:80"
-    volumes:    
-      - ./server/conf/default.conf:/etc/nginx/conf.d/default.conf
-      - ./server/conf/gzip.conf:/etc/nginx/conf.d/gzip.conf     
+      - "8000:80"     
     depends_on:      
       - nodejs
   nodejs:
-    build: .
+    build: 
+      context: ./server
     environment: 
       NODE_ENV: production   
     restart: always   
-    command: ["yarn", "server"]
+ 
     

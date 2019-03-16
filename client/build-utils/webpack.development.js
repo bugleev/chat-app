@@ -23,11 +23,9 @@ module.exports = () => {
           target: SERVER_URL,
           ws: true
         },
-        "/auth/": {
-          target: SERVER_URL
-        },
-        "/download/": {
-          target: SERVER_URL
+        "/api": {
+          target: SERVER_URL,
+          pathRewrite: { "^/api": "" }
         }
       }
     },

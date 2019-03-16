@@ -3,10 +3,6 @@ import { navigate } from "@reach/router";
 import { socketState, fetchState } from "./";
 
 class AuthorizationState {
-  constructor() {
-    // get data from local storage on startup
-    // this.readUserFromLocalStorage();
-  }
   @observable
   isAuth = false;
   @observable
@@ -19,7 +15,7 @@ class AuthorizationState {
   @action
   signupUser = flow(function*(requestBody) {
     fetchState.startFetching();
-    let request = new Request(`/auth/signup`, {
+    let request = new Request(`/api/auth/signup`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -58,7 +54,7 @@ class AuthorizationState {
   @action
   loginUser = flow(function*(requestBody) {
     fetchState.startFetching();
-    let request = new Request(`/auth/login`, {
+    let request = new Request(`/api/auth/login`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -90,7 +86,7 @@ class AuthorizationState {
   @action
   requestPasswordReset = flow(function*(requestBody) {
     fetchState.startFetching();
-    let request = new Request(`/auth/forgot-password`, {
+    let request = new Request(`/api/auth/forgot-password`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -106,7 +102,7 @@ class AuthorizationState {
   @action
   verifyResetToken = flow(function*(requestBody) {
     fetchState.startFetching();
-    let request = new Request(`/auth/reset-password/token`, {
+    let request = new Request(`/api/auth/reset-password/token`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -137,7 +133,7 @@ class AuthorizationState {
       return;
     }
     requestBody.userId = id;
-    let request = new Request(`/auth/reset-password`, {
+    let request = new Request(`/api/auth/reset-password`, {
       method: "POST",
       headers: {
         Accept: "application/json",

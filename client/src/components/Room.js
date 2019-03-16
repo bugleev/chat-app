@@ -81,7 +81,7 @@ class Room extends Component {
     return (
       <React.Fragment>
         <div className={chatStyles.currentRoom}>
-          <span>{this.props.roomId}</span>
+          <span>{socketState.currentRoom}</span>
         </div>
         <div className={chatStyles.chatList} ref={this.chatList}>
           {socketState.roomMessages.map((el, i) =>

@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -36,12 +37,9 @@ app.use((error, req, res, next) => {
   });
 });
 
-// serve react files in production
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(serverPath, "../client/build")));
-  app.get("*", (req, res) =>
-    res.sendFile(path.join(serverPath, "../client/build/index.html"))
-  );
+// check if uploads folder exist
+if (!fs.existsSync(path.join(serverPath, process.env.UPLOADS_DIR))) {
+  fs.mkdirSync(path.join(serverPath, process.env.UPLOADS_DIR));
 }
 
 exports.startServer = done => {

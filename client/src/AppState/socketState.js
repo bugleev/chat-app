@@ -208,7 +208,7 @@ class SocketIOState {
   receiveFile = flow(function*(fileLink, fileName) {
     if (fileName === "link expired") return;
     fetchState.startFetching();
-    let request = new Request(`/download/${fileLink}`, {
+    let request = new Request(`/api/download/${fileLink}`, {
       method: "GET",
       headers: {
         Authorization: `bearer ${authState.token}`
