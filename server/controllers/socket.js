@@ -78,9 +78,7 @@ exports.leaveRoomAndUpdateUserList = function(socket) {
   if (!user) return;
   socket.leave(user.room);
   const roomUserList = userList.getUserList(user.room);
-  this.ioServer
-    .to(user.room)
-    .emit("updateUserList", userList.getUserList(user.room));
+  this.ioServer.to(user.room).emit("updateUserList", roomUserList);
   // broadcast the leave event only on one open connection
   if (!roomUserList.includes(user.name)) {
     socket.broadcast
@@ -90,8 +88,8 @@ exports.leaveRoomAndUpdateUserList = function(socket) {
 };
 exports.messageHandler = async function(socket, request) {
   try {
-    request.created = Date.now();
     if (!request.text) throw new Error("No message provided!");
+    request.created = Date.now();
     const user = await User.findOne({ username: request.user }).select("_id");
     const room = await Room.findOne({ name: request.room }).select("_id");
     const message = new Message({
@@ -99,7 +97,6 @@ exports.messageHandler = async function(socket, request) {
       room: room._id,
       text: request.text
     });
-
     this.ioServer.to(request.room).emit("newMessage", request);
     message.save();
   } catch (error) {

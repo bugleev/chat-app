@@ -3,7 +3,7 @@ class UserList {
     this.users = [];
   }
   addUser(userData) {
-    // if user connects from other socket, replace him
+    // if user connects from other socket, do not add him
     const userInList = this.users.find(el => el.name === userData.name);
     if (userInList) {
       return;

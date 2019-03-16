@@ -24,10 +24,9 @@ exports.signup = async (req, res, next) => {
       username: name,
       password: await bcrypt.hash(password, 12)
     });
-    const savedUser = await user.save();
+    await user.save();
     return res.status(201).json({
-      success: true,
-      body: { id: savedUser._id.toString() }
+      success: true
     });
   } catch (err) {
     err.statusCode = err.statusCode || 500;

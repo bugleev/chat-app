@@ -29,8 +29,7 @@ const messageSchema = new Schema({
   },
   fileLink: {
     type: String,
-    required: true,
-    default: false
+    required: true
   }
 });
 messageSchema.index({ created: -1 });
