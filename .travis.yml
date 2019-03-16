@@ -1,0 +1,8 @@
+sudo: required
+services:
+  - docker
+script:
+  - echo "skipping tests"  
+after_success: 
+  - docker build -t katbert/chat-nginx ./client  
+  - docker build -t katbert/chat-nodejs ./server  
