@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import chatStyles from "../styles/Chat.module.sass";
 import { Link } from "@reach/router";
-import { authState, socketState } from "../AppState";
+import { authState, socketState } from "../appState";
 import { observer } from "mobx-react";
 
 @observer

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { socketState } from "../AppState";
+import { socketState } from "../appState";
 import chatStyles from "../styles/Chat.module.sass";
 import UserList from "./UserList";
 import { getUsernameColor } from "../utils/getUsernameColor";

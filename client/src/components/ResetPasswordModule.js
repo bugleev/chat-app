@@ -3,7 +3,7 @@ import { MdLock, MdEmail } from "react-icons/md";
 import BeatLoader from "react-spinners/BeatLoader";
 import { observer, Provider, inject } from "mobx-react";
 import chatStyles from "../styles/Chat.module.sass";
-import { formState, fetchState, authState } from "../AppState";
+import { formState, fetchState, authState } from "../appState";
 
 const SendEmailForm = inject("formState")(
   observer(({ formState }) => {

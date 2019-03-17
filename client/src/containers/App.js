@@ -8,7 +8,7 @@ import MenuModule from "../components/MenuModule";
 import LoginModule from "../components/LoginModule";
 import AddRoomForm from "../components/AddRoomForm";
 import SignupModule from "../components/SignupModule";
-import { authState, fetchState } from "../AppState";
+import { authState, fetchState } from "../appState";
 import ResetPasswordModule from "../components/ResetPasswordModule";
 
 authState.readUserFromLocalStorage();

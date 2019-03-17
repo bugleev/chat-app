@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import chatStyles from "../styles/Chat.module.sass";
 import { observer } from "mobx-react";
-import { socketState } from "../AppState";
+import { socketState } from "../appState";
 @observer
 class UserList extends Component {
   render() {

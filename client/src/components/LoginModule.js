@@ -4,7 +4,7 @@ import BeatLoader from "react-spinners/BeatLoader";
 import { observer } from "mobx-react";
 import { Link } from "@reach/router";
 import chatStyles from "../styles/Chat.module.sass";
-import { formState, fetchState } from "../AppState";
+import { formState, fetchState } from "../appState";
 
 @observer
 class LoginModule extends Component {

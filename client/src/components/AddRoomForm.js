@@ -3,7 +3,7 @@ import { Link } from "@reach/router";
 import { observer } from "mobx-react";
 
 import chatStyles from "../styles/Chat.module.sass";
-import { formState, socketState } from "../AppState";
+import { formState, socketState } from "../appState";
 
 @observer
 class AddRoomForm extends Component {
