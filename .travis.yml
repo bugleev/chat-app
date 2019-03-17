@@ -7,7 +7,7 @@ branches:
 script:
   - echo "skipping tests"  
 after_success: 
-  - docker-compose up --build
+  - docker-compose up --build -d
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker push katbert/chat-app_nginx_1
   - docker push katbert/chat-app_nodejs_1
