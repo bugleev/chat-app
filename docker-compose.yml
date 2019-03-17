@@ -2,6 +2,7 @@ version: "3.1"
 services:
   
   nginx:
+    image: katbert/chat-client
     build: 
       context: ./client
     restart: always 
@@ -10,10 +11,16 @@ services:
     depends_on:      
       - nodejs
   nodejs:
+    image: katbert/chat-server
     build: 
       context: ./server
     environment: 
-      NODE_ENV: production   
+      NODE_ENV: production
+      PORT: 5555
+      MONGO_DB: mongodb://chat_admin:password1@ds123465.mlab.com:23465/da_chat
+      JWT_SECRET: secret_jwt_code
+      CLEAN_UPLOADS_DAYS: 10
+      UPLOADS_DIR: uploads   
     restart: always   
  
     
