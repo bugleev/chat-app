@@ -9,5 +9,5 @@ script:
 after_success: 
   - docker-compose build 
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  - docker push katbert/chat-app_nginx
-  - docker push katbert/chat-app_nodejs
+  - docker push chatapp_nginx:latest
+  - docker push chatapp_nodejs:latest
