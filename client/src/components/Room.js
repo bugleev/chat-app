@@ -13,14 +13,14 @@ class Room extends Component {
     chatNode.addEventListener("scroll", this.fetchMessagesOnscroll);
     document
       .getElementById("chat-input")
-      .addEventListener("keypress", this.submitOnEnter);
+      .addEventListener("keyup", this.submitOnEnter);
   }
   componentWillUnMount() {
     const chatNode = this.chatList.current;
     chatNode.removeEventListener("scroll", this.fetchMessagesOnscroll);
     document
       .getElementById("chat-input")
-      .removeEventListener("keypress", this.submitOnEnter);
+      .removeEventListener("keyup", this.submitOnEnter);
   }
   getSnapshotBeforeUpdate() {
     const { scrollHeight, scrollTop, clientHeight } = this.chatList.current;
@@ -90,32 +90,32 @@ class Room extends Component {
                 <span className={chatStyles.systemMessage}>{el.message}</span>
               </div>
             ) : (
-              <div
-                className={chatStyles.chatLineMessage}
-                key={el.text + el.user + el.timeStamp}
-              >
-                <span className={chatStyles.timeStamp}>{el.timeStamp}</span>
-                <span
-                  className={chatStyles.userName}
-                  style={{ color: getUsernameColor(el.user) }}
+                <div
+                  className={chatStyles.chatLineMessage}
+                  key={el.text + el.user + el.timeStamp}
                 >
-                  {el.user}
-                </span>
-                <span style={{ marginRight: 5 }}>:</span>
-                {!el.isFile ? (
-                  <span className={chatStyles.message}>{el.text}</span>
-                ) : (
-                  <button
-                    className={chatStyles.fileMessage}
-                    onClick={() =>
-                      socketState.receiveFile(el.fileLink, el.text)
-                    }
+                  <span className={chatStyles.timeStamp}>{el.timeStamp}</span>
+                  <span
+                    className={chatStyles.userName}
+                    style={{ color: getUsernameColor(el.user) }}
                   >
-                    {el.text}
-                  </button>
-                )}
-              </div>
-            )
+                    {el.user}
+                  </span>
+                  <span style={{ marginRight: 5 }}>:</span>
+                  {!el.isFile ? (
+                    <span className={chatStyles.message}>{el.text}</span>
+                  ) : (
+                      <button
+                        className={chatStyles.fileMessage}
+                        onClick={() =>
+                          socketState.receiveFile(el.fileLink, el.text)
+                        }
+                      >
+                        {el.text}
+                      </button>
+                    )}
+                </div>
+              )
           )}
         </div>
         <UserList />
@@ -125,6 +125,7 @@ class Room extends Component {
               <textarea
                 name="chat-input"
                 placeholder={`Send a message #${this.props.roomId}`}
+                maxLength="250"
                 id="chat-input"
               />
             </div>
