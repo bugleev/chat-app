@@ -1,0 +1,28 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "chat-client",
+      "image": "katbert/chat-client",
+      "hostname": "nginx",
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": [
+        "chat-server"
+      ],
+      "memory": 128
+    },
+    {
+      "name": "chat-server",
+      "image": "katbert/chat-server",
+      "hostname": "nodejs",
+      "essential": false,
+      "memory": 128
+    }
+  ]
+}

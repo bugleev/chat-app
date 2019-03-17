@@ -11,3 +11,15 @@ after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker push katbert/chat-client
   - docker push katbert/chat-server
+deploy:
+  provider: elasticbeanstalk
+  region: eu-north-1
+  app: bugleev-chat
+  env: Dachat-env
+  bucket_name: elasticbeanstalk-eu-north-1-263451985759
+  bucket_path: da-chat
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key:
+    secure: $AWS_SECRET_KEY  
