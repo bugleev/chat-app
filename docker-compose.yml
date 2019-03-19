@@ -17,8 +17,7 @@ services:
     environment: 
       NODE_ENV: production
       PORT: 5555
-      MONGO_DB: mongodb://chat_admin:password1@ds123465.mlab.com:23465/da_chat
-      SENDGRID_API_KEY: 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
+      MONGO_DB: mongodb://chat_admin:password1@ds123465.mlab.com:23465/da_chat     
       JWT_SECRET: secret_jwt_code
       CLEAN_UPLOADS_DAYS: 10
       UPLOADS_DIR: uploads   
