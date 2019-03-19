@@ -38,6 +38,15 @@ app.use((error, req, res, next) => {
   });
 });
 
+// case for a production build without docker
+if (process.env.NODE_ENV === "production" && process.env.NO_DOCKER) {
+  app.use("/api", appRoutes);
+  app.use(express.static(path.join(serverPath, "../client/build")));
+  app.get("*", (req, res) =>
+    res.sendFile(path.join(serverPath, "../client/build/index.html"))
+  );
+}
+
 // check if uploads folder exist
 if (!fs.existsSync(path.join(serverPath, process.env.UPLOADS_DIR))) {
   fs.mkdirSync(path.join(serverPath, process.env.UPLOADS_DIR));
