@@ -13,7 +13,7 @@ class AuthorizationState {
   resetAllowed = false;
 
   @action
-  signupUser = flow(function*(requestBody) {
+  signupUser = flow(function* (requestBody) {
     fetchState.startFetching();
     let request = new Request(`/api/auth/signup`, {
       method: "POST",
@@ -29,6 +29,7 @@ class AuthorizationState {
     fetchState.fetchStop();
     if (data.success) {
       navigate(`/login`);
+      fetchState.fetchError("You are succesfully registered! Please login");
     }
   });
 
@@ -52,7 +53,7 @@ class AuthorizationState {
   };
 
   @action
-  loginUser = flow(function*(requestBody) {
+  loginUser = flow(function* (requestBody) {
     fetchState.startFetching();
     let request = new Request(`/api/auth/login`, {
       method: "POST",
@@ -84,7 +85,7 @@ class AuthorizationState {
     }
   });
   @action
-  requestPasswordReset = flow(function*(requestBody) {
+  requestPasswordReset = flow(function* (requestBody) {
     fetchState.startFetching();
     let request = new Request(`/api/auth/forgot-password`, {
       method: "POST",
@@ -100,7 +101,7 @@ class AuthorizationState {
     yield fetchState.fetchStop();
   });
   @action
-  verifyResetToken = flow(function*(requestBody) {
+  verifyResetToken = flow(function* (requestBody) {
     fetchState.startFetching();
     let request = new Request(`/api/auth/reset-password/token`, {
       method: "POST",
@@ -124,7 +125,7 @@ class AuthorizationState {
   });
 
   @action
-  resetPassword = flow(function*(requestBody) {
+  resetPassword = flow(function* (requestBody) {
     fetchState.startFetching();
     const id = localStorage.getItem("reset_id");
     if (!id) {

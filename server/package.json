@@ -4,11 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
     "server": "nodemon index.js",
     "client": "yarn --cwd ../client dev",
-    "client-prod": "yarn --cwd ../client prod",
-    "client-i": "yarn --cwd ../client",
     "dev": "concurrently \"yarn server\" \"yarn client\" "
   },
   "keywords": [],

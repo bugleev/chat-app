@@ -32,7 +32,7 @@ const insertDatesInMessages = messages => {
   return messages;
 };
 
-const DEFAULT_ROOM = "world";
+const DEFAULT_ROOM = "Main";
 const TYPING_TIMER_LENGTH = 400;
 const MESSAGES_LIMIT = 40;
 
@@ -205,7 +205,7 @@ class SocketIOState {
     );
   };
   @action
-  receiveFile = flow(function*(fileLink, fileName) {
+  receiveFile = flow(function* (fileLink, fileName) {
     if (fileName === "link expired") return;
     fetchState.startFetching();
     let request = new Request(`/api/download/${fileLink}`, {
@@ -250,7 +250,7 @@ class SocketIOState {
     this.socket.on("appError", error => {
       fetchState.fetchError(error.message || "server error!");
       if (error.message === "No room found with that name!") {
-        this.joinRoom(this.currentRoom, authState.username);
+        navigate("/rooms/add")
       }
     });
     this.socket.on("updateUserList", data => {
