@@ -92,7 +92,7 @@ class Room extends Component {
             ) : (
                 <div
                   className={chatStyles.chatLineMessage}
-                  key={el.text + el.user + el.timeStamp}
+                  key={`${el.user}_${i}`}
                 >
                   <span className={chatStyles.timeStamp}>{el.timeStamp}</span>
                   <span
