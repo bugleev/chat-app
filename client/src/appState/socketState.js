@@ -74,7 +74,7 @@ class SocketIOState {
   connectSocket = token => {
     // pass jwt token along on connection
     this.socket = openSocket("/", {
-      path: "/da_chat",
+      path: "/srv_chat",
       query: { token }
     });
     if (this.socket) {

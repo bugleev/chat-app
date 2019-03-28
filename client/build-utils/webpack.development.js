@@ -19,7 +19,7 @@ module.exports = () => {
       open: true,
       overlay: true,
       proxy: {
-        "/da_chat": {
+        "/srv_chat": {
           target: SERVER_URL,
           ws: true
         },
