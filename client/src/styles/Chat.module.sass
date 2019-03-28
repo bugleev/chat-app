@@ -106,10 +106,12 @@ h3, h4
   margin-bottom: 3rem 
   +mq(phone-wide, max)        
     margin: 0 auto
-    width: 70px
+    width: 50%
+    transform: none
 h2 
   margin: 2rem 0 3rem 0  
-
+  +mq(phone-wide, max)        
+    display: none
 /////////////// BUTTONS  
 .chatButton 
   font-family: "chat"
@@ -193,7 +195,8 @@ h2
   font-size: 1.4rem
   border-radius: 5px
   +mq(phone-wide, max) 
-    min-width: auto   
+    min-width: auto
+    top: 10px   
 form 
   display: flex 
   flex-direction: column
@@ -293,7 +296,10 @@ form
     width: 100%
     min-width: auto
     grid-template-columns: 100%
+    grid-template-rows: auto 1fr
     flex-grow: 1
+  >div:last-child
+    height: 100%  
 .currentRoom
   align-self: flex-start
   justify-self: center
@@ -307,6 +313,7 @@ form
     border-bottom: 1px solid $primary 
 .chatContent
   position: relative
+  height: 100%
   >div
     height: calc(100vh - 150px)
     padding: 1rem 0 0 1rem
@@ -318,7 +325,8 @@ form
       height: 84vh
     +mq(phone-wide, max)
       grid-template-columns: 1fr
-      grid-template-rows: none
+      grid-template-rows: auto auto 1fr auto
+      align-content: flex-start
       padding: 1rem
       height: 100%
 .chatList
@@ -490,7 +498,7 @@ form
       justify-content: center
       align-items: center
       position: relative
-      color: $white
+      color: $white      
       >span 
         width: 70px
         white-space: nowrap
@@ -498,6 +506,8 @@ form
         text-overflow: ellipsis
         background: linear-gradient(to right, #f3f9a763 100%, rgb(232, 232, 232) 0%) 100% center / 100% 80% no-repeat
         background-position: 50% center
+        +mq(phone-wide, max)
+          width: 150px
       .logOut
         font-family: "chat"
         color: $white 
@@ -553,8 +563,7 @@ form
           +mq(phone-wide, max)
             display: inline
             padding: 0 2px
-            min-width: 50px
-            margin-right: 5px
+            min-width: 50px           
             white-space: nowrap
             overflow-x: hidden
             text-overflow: ellipsis    

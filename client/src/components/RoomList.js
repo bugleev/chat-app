@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import chatStyles from "../styles/Chat.module.sass";
 import { Link } from "@reach/router";
-import { authState, socketState } from "../appState";
+import { socketState } from "../appState";
 import { observer } from "mobx-react";
 
 @observer
@@ -16,9 +16,7 @@ class RoomList extends Component {
               {socketState.roomList.map(el => (
                 <button
                   key={el.name}
-                  onClick={() =>
-                    socketState.joinRoom(el.name, authState.username)
-                  }
+                  onClick={() => socketState.joinRoom(el.name)}
                 >
                   {el.name}
                   {el.name === socketState.currentRoom ? (

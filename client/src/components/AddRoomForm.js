@@ -35,11 +35,18 @@ class AddRoomForm extends Component {
               placeholder="enter a name"
             />
           </div>
-
           <div className={chatStyles.addRoomControls}>
-            <button className={chatStyles.cancelButton}>
-              <Link to={`/room/${socketState.currentRoom}`}>Cancel</Link>
-            </button>
+            <span className={chatStyles.cancelButton}>
+              <Link
+                to={
+                  socketState.currentRoom
+                    ? `/room/${socketState.currentRoom}`
+                    : "/"
+                }
+              >
+                Cancel
+              </Link>
+            </span>
             <button className={chatStyles.loginButton}>Create</button>
           </div>
           {showError ? (

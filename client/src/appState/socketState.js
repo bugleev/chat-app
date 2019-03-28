@@ -7,8 +7,7 @@ import saveAs from "file-saver";
 
 import { authState, fetchState } from "./";
 
-const generateMessage = (user, room, message) => ({
-  user,
+const generateMessage = (room, message) => ({
   room,
   text: escapeHtml(message)
 });
@@ -34,7 +33,7 @@ const insertDatesInMessages = messages => {
 
 const DEFAULT_ROOM = "Main";
 const TYPING_TIMER_LENGTH = 400;
-const MESSAGES_LIMIT = 40;
+const MESSAGES_LIMIT = 20;
 
 class SocketIOState {
   socket = null;
@@ -72,7 +71,7 @@ class SocketIOState {
     this.socket.destroy();
   };
   @action
-  connectSocket = (token, username) => {
+  connectSocket = token => {
     // pass jwt token along on connection
     this.socket = openSocket("/", {
       path: "/da_chat",
@@ -86,7 +85,7 @@ class SocketIOState {
         room = decodeURI(history.location.pathname.slice(6));
       }
       this.subscribe();
-      this.joinRoom(room, username);
+      this.joinRoom(room);
     }
   };
   @action
@@ -94,22 +93,20 @@ class SocketIOState {
     this.socket.emit(
       "createRoom",
       {
-        username: authState.username,
         room
       },
       // navigate to room on callback from server
       room => {
-        this.joinRoom(room, authState.username);
+        this.joinRoom(room);
       }
     );
   };
 
   @action
-  joinRoom = (room, name) => {
+  joinRoom = room => {
     this.socket.emit(
       "joinRoom",
       {
-        user: name,
         room: room || DEFAULT_ROOM
       },
       // navigate to room on callback from server
@@ -131,7 +128,7 @@ class SocketIOState {
   createMessage = message => {
     this.socket.emit(
       "createMessage",
-      generateMessage(authState.username, this.currentRoom, message)
+      generateMessage(this.currentRoom, message)
     );
   };
   @action
@@ -195,8 +192,7 @@ class SocketIOState {
       "upload",
       {
         room: this.currentRoom,
-        filename: file.name,
-        user: authState.username
+        filename: file.name
       },
       file,
       () => {
@@ -205,7 +201,7 @@ class SocketIOState {
     );
   };
   @action
-  receiveFile = flow(function* (fileLink, fileName) {
+  receiveFile = flow(function*(fileLink, fileName) {
     if (fileName === "link expired") return;
     fetchState.startFetching();
     let request = new Request(`/api/download/${fileLink}`, {
@@ -236,7 +232,7 @@ class SocketIOState {
       }
     });
     this.socket.on("reconnect", () => {
-      this.joinRoom(this.currentRoom, authState.username);
+      this.joinRoom(this.currentRoom);
       console.log("you have been reconnected");
     });
     this.socket.on("disconnect", data => {
@@ -250,7 +246,7 @@ class SocketIOState {
     this.socket.on("appError", error => {
       fetchState.fetchError(error.message || "server error!");
       if (error.message === "No room found with that name!") {
-        navigate("/rooms/add")
+        navigate("/rooms/add");
       }
     });
     this.socket.on("updateUserList", data => {

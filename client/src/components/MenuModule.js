@@ -6,8 +6,8 @@ import { authState } from "../appState";
 import { getUsernameColor } from "../utils/getUsernameColor";
 
 @observer
-class MenuModule extends Component {  
-  render() {   
+class MenuModule extends Component {
+  render() {
     return (
       <div className={chatStyles.menuWrapper}>
         <div className={chatStyles.accountInfo}>

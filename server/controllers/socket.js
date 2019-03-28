@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const serverPath = require("../util/path");
-const User = require("../models/user");
 const Room = require("../models/room");
 const Message = require("../models/message");
 const userList = require("./UserList");
@@ -103,14 +102,16 @@ exports.messageHandler = async function(socket, request) {
   try {
     if (!request.text) throw new Error("No message provided!");
     request.created = Date.now();
-    const { userId } = extractUserFromJWT(socket);
+    const { userId, username } = extractUserFromJWT(socket);
     const room = await Room.findOne({ name: request.room }).select("_id");
     const message = new Message({
       author: userId,
       room: room._id,
       text: request.text
     });
-    this.ioServer.to(request.room).emit("newMessage", request);
+    this.ioServer
+      .to(request.room)
+      .emit("newMessage", { user: username, ...request });
     message.save();
   } catch (error) {
     socket.emit("error", error);
@@ -131,7 +132,7 @@ exports.uploadFileMessage = function(socket, request, file, cb) {
       stream.end(async () => {
         request.created = Date.now();
         const room = await Room.findOne({ name: request.room }).select("_id");
-        const { userId } = extractUserFromJWT(socket);
+        const { userId, username } = extractUserFromJWT(socket);
         const message = new Message({
           author: userId,
           room: room._id,
@@ -141,6 +142,7 @@ exports.uploadFileMessage = function(socket, request, file, cb) {
         });
         const fileMessage = { ...request };
         fileMessage.text = request.filename;
+        fileMessage.user = username;
         fileMessage.isFile = true;
         fileMessage.fileLink = downloadLink;
         this.ioServer.to(request.room).emit("newMessage", fileMessage);

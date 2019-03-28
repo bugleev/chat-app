@@ -16,9 +16,7 @@ services:
       context: ./server
     environment: 
       NODE_ENV: production
-      PORT: 5555
-      MONGO_DB: mongodb://chat_admin:password1@ds123465.mlab.com:23465/da_chat     
-      JWT_SECRET: secret_jwt_code
+      PORT: 5555    
       CLEAN_UPLOADS_DAYS: 10
       UPLOADS_DIR: uploads   
     restart: always   

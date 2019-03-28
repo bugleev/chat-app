@@ -90,32 +90,32 @@ class Room extends Component {
                 <span className={chatStyles.systemMessage}>{el.message}</span>
               </div>
             ) : (
-                <div
-                  className={chatStyles.chatLineMessage}
-                  key={`${el.user}_${i}`}
+              <div
+                className={chatStyles.chatLineMessage}
+                key={`${el.user}_${i}`}
+              >
+                <span className={chatStyles.timeStamp}>{el.timeStamp}</span>
+                <span
+                  className={chatStyles.userName}
+                  style={{ color: getUsernameColor(el.user) }}
                 >
-                  <span className={chatStyles.timeStamp}>{el.timeStamp}</span>
-                  <span
-                    className={chatStyles.userName}
-                    style={{ color: getUsernameColor(el.user) }}
+                  {el.user}
+                </span>
+                <span style={{ marginRight: 5 }}>:</span>
+                {!el.isFile ? (
+                  <span className={chatStyles.message}>{el.text}</span>
+                ) : (
+                  <button
+                    className={chatStyles.fileMessage}
+                    onClick={() =>
+                      socketState.receiveFile(el.fileLink, el.text)
+                    }
                   >
-                    {el.user}
-                  </span>
-                  <span style={{ marginRight: 5 }}>:</span>
-                  {!el.isFile ? (
-                    <span className={chatStyles.message}>{el.text}</span>
-                  ) : (
-                      <button
-                        className={chatStyles.fileMessage}
-                        onClick={() =>
-                          socketState.receiveFile(el.fileLink, el.text)
-                        }
-                      >
-                        {el.text}
-                      </button>
-                    )}
-                </div>
-              )
+                    {el.text}
+                  </button>
+                )}
+              </div>
+            )
           )}
         </div>
         <UserList />

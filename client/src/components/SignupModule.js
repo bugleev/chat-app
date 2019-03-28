@@ -16,7 +16,7 @@ class SignupModule extends Component {
     const showError = formState.signupForm.error;
     return (
       <React.Fragment>
-        <h2>Chat app</h2>
+        <h2>srv chat</h2>
         <div className={chatStyles.loginWrapper}>
           {fetchState.errorMessage ? (
             <div className={chatStyles.loginErrorWrapper}>

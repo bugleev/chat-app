@@ -13,7 +13,7 @@ class AuthorizationState {
   resetAllowed = false;
 
   @action
-  signupUser = flow(function* (requestBody) {
+  signupUser = flow(function*(requestBody) {
     fetchState.startFetching();
     let request = new Request(`/api/auth/signup`, {
       method: "POST",
@@ -49,11 +49,11 @@ class AuthorizationState {
       new Date(expiryDate).getTime() - new Date().getTime();
     this.setLoginDetails({ token, username });
     this.setAutoLogout(remainingMilliseconds);
-    socketState.connectSocket(this.token, this.username);
+    socketState.connectSocket(this.token);
   };
 
   @action
-  loginUser = flow(function* (requestBody) {
+  loginUser = flow(function*(requestBody) {
     fetchState.startFetching();
     let request = new Request(`/api/auth/login`, {
       method: "POST",
@@ -81,11 +81,11 @@ class AuthorizationState {
         username: data.body.username
       });
       navigate(`/`);
-      socketState.connectSocket(this.token, this.username);
+      socketState.connectSocket(this.token);
     }
   });
   @action
-  requestPasswordReset = flow(function* (requestBody) {
+  requestPasswordReset = flow(function*(requestBody) {
     fetchState.startFetching();
     let request = new Request(`/api/auth/forgot-password`, {
       method: "POST",
@@ -101,7 +101,7 @@ class AuthorizationState {
     yield fetchState.fetchStop();
   });
   @action
-  verifyResetToken = flow(function* (requestBody) {
+  verifyResetToken = flow(function*(requestBody) {
     fetchState.startFetching();
     let request = new Request(`/api/auth/reset-password/token`, {
       method: "POST",
@@ -125,7 +125,7 @@ class AuthorizationState {
   });
 
   @action
-  resetPassword = flow(function* (requestBody) {
+  resetPassword = flow(function*(requestBody) {
     fetchState.startFetching();
     const id = localStorage.getItem("reset_id");
     if (!id) {
