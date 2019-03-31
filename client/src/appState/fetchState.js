@@ -33,7 +33,9 @@ class fetchStatus {
       }
     } catch (error) {
       this.fetchError(
-        `Network error! No server connection. Message: ${error.message}`
+        `Network error! No server connection.${
+          error.message ? ` Message: ${error.message}` : ""
+        }`
       );
     }
   });

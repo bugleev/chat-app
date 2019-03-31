@@ -7,7 +7,6 @@ require("dotenv").config();
 
 const serverPath = require("../util/path");
 const appRoutes = require("../routes");
-const cleanupJob = require("../util/cleanup");
 
 const app = express();
 
@@ -68,7 +67,7 @@ exports.startServer = done => {
       connectedSocket = require("./socketServer").init(server);
       connectedSocket.watchConnection();
       // start cron job for clearing uploads folder
-      cleanupJob.start();
+      require("../util/cleanup").start();
     })
     .catch(err => console.log(err));
   done();
