@@ -19,7 +19,7 @@ const ChatModule = observer(({ authState, fetchState }) => (
   <React.Fragment>
     {authState.isAuth ? (
       <React.Fragment>
-        <h2 className={chatStyles.title}>SRV CHAT</h2>
+        <h2 className={chatStyles.title}>buybots CHAT</h2>
         <div className={chatStyles.chatWrapper}>
           {fetchState.errorMessage ? (
             <div className={chatStyles.loginErrorWrapper}>

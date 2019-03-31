@@ -5,7 +5,7 @@ let socketController = require("../controllers/socket");
 class SocketServer {
   constructor(server) {
     this.ioServer = io(server, {
-      path: "/srv_chat"
+      path: "/buybots_chat"
     });
     socketController = Object.assign(this, socketController);
   }
