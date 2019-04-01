@@ -28,10 +28,10 @@
   ],
   "containerDefinitions": [
     {
-      "name": "nginx-proxy",
-      "image": "jwilder/nginx-proxy",
+      "name": "chat-client",
+      "image": "katbert/chat-client",
+      "hostname": "nginx",
       "essential": true,
-      "memoryReservation": 128,
       "dockerLabels": {
         "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy": "true"
       },
@@ -45,6 +45,10 @@
           "hostPort": 443
         }
       ],
+      "links": [
+        "chat-server"
+      ],
+      "memory": 128,
       "mountPoints": [
         {
           "sourceVolume": "home-ec2-user-certs",
@@ -64,45 +68,7 @@
           "containerPath": "/tmp/docker.sock",
           "readOnly": true
         }
-      ]
-    },
-    {
-      "name": "letsencrypt-nginx-proxy-companion",
-      "image": "jrcs/letsencrypt-nginx-proxy-companion",
-      "essential": true,
-      "memoryReservation": 128,
-      "volumesFrom": [
-        {
-          "sourceContainer": "nginx-proxy"
-        }
       ],
-      "mountPoints": [
-        {
-          "sourceVolume": "home-ec2-user-certs",
-          "containerPath": "/etc/nginx/certs"
-        },
-        {
-          "sourceVolume": "var-run-docker-sock",
-          "containerPath": "/var/run/docker.sock",
-          "readOnly": true
-        }
-      ]
-    },
-    {
-      "name": "chat-client",
-      "image": "katbert/chat-client",
-      "hostname": "nginx",
-      "essential": true,
-      "portMappings": [
-        {
-          "hostPort": 80,
-          "containerPort": 80
-        }
-      ],
-      "links": [
-        "chat-server"
-      ],
-      "memory": 128,
       "environment": [
         {
           "name": "VIRTUAL_HOST",
@@ -115,6 +81,28 @@
         {
           "name": "LETSENCRYPT_EMAIL",
           "value": "bugol8@yandex.ru"
+        }
+      ]
+    },
+    {
+      "name": "letsencrypt-nginx-proxy-companion",
+      "image": "jrcs/letsencrypt-nginx-proxy-companion",
+      "essential": true,
+      "memoryReservation": 128,
+      "volumesFrom": [
+        {
+          "sourceContainer": "chat-client"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "home-ec2-user-certs",
+          "containerPath": "/etc/nginx/certs"
+        },
+        {
+          "sourceVolume": "var-run-docker-sock",
+          "containerPath": "/var/run/docker.sock",
+          "readOnly": true
         }
       ]
     },
