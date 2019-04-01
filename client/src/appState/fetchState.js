@@ -22,11 +22,22 @@ class fetchStatus {
   fetchAndVerifyResponse = flow(function*(request) {
     try {
       const response = yield fetch(request);
+      console.log("response:", response);
       if (!response.ok) {
-        const error = yield response.json();
+        let error = "";
+        try {
+          const text = yield response.text(); // Parse it as text
+          const data = JSON.parse(text); // Try to parse it as json
+          error = data.message;
+        } catch (err) {
+          error = `Server error! Status:${response.status}. ${
+            response.statusText
+          }`;
+          // This probably means your response is text, do you text handling here
+        }
         process.env.NODE_ENV === "development" && console.log(error);
         this.fetchStop();
-        this.fetchError(`${error.message}`);
+        this.fetchError(error);
         return false;
       } else {
         return response;
