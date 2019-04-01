@@ -77,10 +77,10 @@ exports.sendResetToken = async (req, res, next) => {
     const resetURL = `http://${req.headers.host}/reset/${userInDB.resetToken}`;
     await sgMail.send({
       to: email,
-      from: "da-chat@dataart.com",
+      from: "bugol8@yandex.ru",
       subject: "Password reset request",
       html: `<h1>Follow the link to reset your password</h1> <a href=${resetURL}>Reset password</a>`,
-      text: "test example"
+      text: ""
     });
     return res.status(200).json({
       success: true,
