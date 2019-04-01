@@ -22,7 +22,6 @@ class fetchStatus {
   fetchAndVerifyResponse = flow(function*(request) {
     try {
       const response = yield fetch(request);
-      console.log("response:", response);
       if (!response.ok) {
         let error = "";
         try {
