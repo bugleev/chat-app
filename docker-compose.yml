@@ -11,22 +11,22 @@ services:
     depends_on:      
       - nodejs
     volumes:
-      - html:/usr/share/nginx/html     
-      - vhost:/etc/nginx/vhost.d
-      - certs:/etc/nginx/certs:ro
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - "/etc/nginx/vhost.d"
+      - "/usr/share/nginx/html"
+      - "certs:/etc/nginx/certs:ro"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
   letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: nginx-proxy-lets-encrypt
     depends_on:
-      - "nginx"
+      - nginx
+    volumes_from:
+      - nginx
     volumes:
-      - certs:/etc/nginx/certs:rw
-      - vhost:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - /var/run/docker.sock:/var/run/docker.sock:ro    
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "certs:/etc/nginx/certs:rw"
   nodejs:
     image: katbert/chat-server
     build: 
@@ -39,7 +39,6 @@ services:
     restart: always   
 volumes:
   certs:
-  html:
-  vhost:
+ 
    
     
