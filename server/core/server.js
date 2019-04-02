@@ -53,8 +53,12 @@ if (!fs.existsSync(path.join(serverPath, process.env.UPLOADS_DIR))) {
 
 exports.startServer = done => {
   let connectedSocket;
+  const database =
+    process.env.NODE_ENV === "production"
+      ? process.env.MONGO_DB
+      : process.env.MONGO_DB_DEV;
   mongoose
-    .connect(process.env.MONGO_DB, {
+    .connect(database, {
       useNewUrlParser: true
     })
     .then(() => {

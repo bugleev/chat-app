@@ -1,6 +1,9 @@
+const bot = require("./BotInstance");
+
 class UserList {
   constructor() {
     this.users = [];
+    this.users.push({ name: bot.name, role: "bot", room: "General" });
   }
   addUser(userData) {
     // if user connects from other socket, do not add him
@@ -8,6 +11,7 @@ class UserList {
     if (userInList) {
       return;
     }
+    userData.role = "user";
     this.users.push(userData);
   }
   removeUser(socketId) {
@@ -21,7 +25,9 @@ class UserList {
     return this.users.find(el => el.socketId === socketId);
   }
   getUserList(room) {
-    return this.users.filter(el => el.room === room).map(el => el.name);
+    return this.users
+      .filter(el => el.room === room)
+      .map(el => ({ name: el.name, role: el.role }));
   }
 }
 

@@ -71,6 +71,11 @@ class Room extends Component {
       event.target.value = "";
     }
   };
+  selectUserToMessage = name => {
+    const textarea = document.getElementById("chat-input");
+    textarea.value = `@${name}, `;
+    textarea.focus();
+  };
   submitForm = e => {
     e.preventDefault();
     if (!e.target[0].value.trim()) return;
@@ -95,12 +100,13 @@ class Room extends Component {
                 key={`${el.user}_${i}`}
               >
                 <span className={chatStyles.timeStamp}>{el.timeStamp}</span>
-                <span
+                <button
                   className={chatStyles.userName}
                   style={{ color: getUsernameColor(el.user) }}
+                  onClick={() => this.selectUserToMessage(el.user)}
                 >
                   {el.user}
-                </span>
+                </button>
                 <span style={{ marginRight: 5 }}>:</span>
                 {!el.isFile ? (
                   <span className={chatStyles.message}>{el.text}</span>
@@ -118,7 +124,7 @@ class Room extends Component {
             )
           )}
         </div>
-        <UserList />
+        <UserList selectUser={this.selectUserToMessage} />
         <div className={chatStyles.chatInputBox}>
           <form action="POST" onSubmit={this.submitForm}>
             <div>

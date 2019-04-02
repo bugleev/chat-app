@@ -4,6 +4,7 @@ const serverPath = require("../util/path");
 const Room = require("../models/room");
 const Message = require("../models/message");
 const userList = require("./UserList");
+const Bot = require("./BotInstance");
 
 const isOlderThan = (created, interval) =>
   Date.now() - new Date(created).getTime() > 1000 * 60 * 60 * 24 * interval;
@@ -113,10 +114,26 @@ exports.messageHandler = async function(socket, request) {
       .to(request.room)
       .emit("newMessage", { user: username, ...request });
     message.save();
+    this.sendBotResponse(request.text, request.room, socket);
   } catch (error) {
     socket.emit("error", error);
   }
 };
+exports.sendBotResponse = async function(message, room, socket) {
+  try {
+    const botResponse = await Bot.checkMessage(message);
+    const response = {
+      text: botResponse,
+      created: Date.now(),
+      room: room,
+      user: "SRVBot"
+    };
+    this.ioServer.to(room).emit("newMessage", response);
+  } catch (error) {
+    socket.emit("error", error);
+  }
+};
+
 exports.uploadFileMessage = function(socket, request, file, cb) {
   try {
     if (!request.filename) throw new Error("No file provided!");
