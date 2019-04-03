@@ -122,6 +122,7 @@ exports.messageHandler = async function(socket, request) {
 exports.sendBotResponse = async function(message, room, socket) {
   try {
     const botResponse = await Bot.checkMessage(message);
+    if (!botResponse) return;
     const response = {
       text: botResponse,
       created: Date.now(),
@@ -203,17 +204,22 @@ exports.populateMessages = async function(socket, { limit, skip, room }) {
  */
   const formattedMessages = messages
     .sort((a, b) => a.created - b.created)
-    .map(el => ({
-      user: el.author.username,
-      text: el.isFile
-        ? isOlderThan(el.created, process.env.CLEAN_UPLOADS_DAYS)
-          ? "link expired"
-          : el.text
-        : el.text,
-      created: el.created,
-      isFile: !!el.isFile,
-      fileLink: el.fileLink
-    }));
+    .map(el =>
+      el.author
+        ? {
+            user: el.author.username,
+            text: el.isFile
+              ? isOlderThan(el.created, process.env.CLEAN_UPLOADS_DAYS)
+                ? "link expired"
+                : el.text
+              : el.text,
+            created: el.created,
+            isFile: !!el.isFile,
+            fileLink: el.fileLink
+          }
+        : undefined
+    )
+    .filter(Boolean);
   socket.emit("populateMessagesFromDB", { messages: formattedMessages });
 };
 exports.typingHandler = function(socket) {
