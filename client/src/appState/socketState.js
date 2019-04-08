@@ -179,6 +179,9 @@ class SocketIOState {
       }, TYPING_TIMER_LENGTH);
     }
   };
+  downloadYandex = () => {
+    this.socket.emit("yandex");
+  };
   @action
   handleFileUpload = e => {
     const file = e.target.files[0];

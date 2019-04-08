@@ -142,6 +142,12 @@ class Room extends Component {
             </div>
           </form>
         </div>
+        <button
+          className={chatStyles.chatButton}
+          onClick={socketState.downloadYandex}
+        >
+          Yandex
+        </button>
         <div className={chatStyles.fileInput}>
           <label htmlFor="upload-file" className={chatStyles.fileLabel}>
             {socketState.fileUploading ? "test!" : "Upload file"}

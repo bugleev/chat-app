@@ -1,5 +1,7 @@
 const fs = require("fs");
 const path = require("path");
+const { Transform } = require("stream");
+const request = require("request");
 const serverPath = require("../util/path");
 const Room = require("../models/room");
 const Message = require("../models/message");
@@ -172,7 +174,42 @@ exports.uploadFileMessage = function(socket, request, file, cb) {
     socket.emit("error", error);
   }
 };
-
+exports.downloadYandex = function(socket) {
+  try {
+    var options = {
+      url:
+        "https://api.rasp.yandex.net/v3.0/stations_list/?apikey=ebf316c3-0577-46c4-93b3-cd3ef3e5feea&lang=ru_RU&format=json",
+      method: "GET",
+      accept: "application/json"
+    };
+    request(options, (err, httpResponse, body) => {
+      const data = [];
+      JSON.parse(body).countries.forEach(co => {
+        co.regions.forEach(el => {
+          el.settlements.forEach(st => {
+            if (st.title) {
+              const str = st.title.replace(/[[\]{}()*+?.,\\^$|#]/g, " ").trim();
+              data.push({ value: str, code: st.codes.yandex_code });
+            }
+          });
+        });
+      });
+      Bot.loadDataFromServer(data);
+      fs.writeFile(
+        path.join(serverPath, process.env.UPLOADS_DIR, "yandex"),
+        JSON.stringify(data),
+        "utf8",
+        e => {
+          console.log(e);
+        }
+      );
+    }).on("close", function() {
+      console.log("downloaded");
+    });
+  } catch (error) {
+    socket.emit("error", error);
+  }
+};
 exports.downloadFile = (req, res, next) => {
   const { link } = req.params;
   var filePath = path.join(serverPath, process.env.UPLOADS_DIR, link);

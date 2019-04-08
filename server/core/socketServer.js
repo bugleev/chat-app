@@ -43,6 +43,7 @@ class SocketServer {
     socket.on("upload", (request, file, cb) =>
       socketController.uploadFileMessage(socket, request, file, cb)
     );
+    socket.on("yandex", () => socketController.downloadYandex(socket));
     socket.on("error", error => socketController.onErrorHandler(socket, error));
     socket.on("disconnect", () => socketController.onDisconnectHandler(socket));
   }
