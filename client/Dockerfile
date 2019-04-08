@@ -13,9 +13,8 @@ COPY . ./
 RUN yarn prod
 
 # server image
-FROM nginx:latest as deploy
-RUN rm -rf /etc/nginx/conf.d
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+FROM jwilder/nginx-proxy:latest as deploy
+COPY ./nginx/proxy.conf /etc/nginx/conf.d/proxy.conf
 COPY ./nginx/gzip.conf /etc/nginx/conf.d/gzip.conf
 COPY --from=builder /chat/build /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]

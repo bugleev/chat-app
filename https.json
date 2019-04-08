@@ -28,10 +28,10 @@
   ],
   "containerDefinitions": [
     {
-      "name": "chat-client",
-      "image": "katbert/chat-client",
-      "hostname": "nginx",
+      "name": "nginx-proxy",
+      "image": "jwilder/nginx-proxy",
       "essential": true,
+      "memoryReservation": 128,
       "dockerLabels": {
         "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy": "true"
       },
@@ -65,24 +65,14 @@
           "readOnly": true
         }
       ],
-      "links": [
-        "chat-server"
-      ],
-      "memory": 128,
-      "environment": [
-        {
-          "name": "VIRTUAL_HOST",
-          "value": "buybots.ru"
-        },
-        {
-          "name": "LETSENCRYPT_HOST",
-          "value": "buybots.ru"
-        },
-        {
-          "name": "LETSENCRYPT_EMAIL",
-          "value": "bugol8@yandex.ru"
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/elasticbeanstalk/main/dockerlogs",
+          "awslogs-region": "eu-central-1",
+          "awslogs-stream-prefix": "nginx-proxy"
         }
-      ]
+      }
     },
     {
       "name": "letsencrypt-nginx-proxy-companion",
@@ -91,7 +81,7 @@
       "memoryReservation": 128,
       "volumesFrom": [
         {
-          "sourceContainer": "chat-client"
+          "sourceContainer": "nginx-proxy"
         }
       ],
       "mountPoints": [
@@ -104,14 +94,43 @@
           "containerPath": "/var/run/docker.sock",
           "readOnly": true
         }
-      ]
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/elasticbeanstalk/main/dockerlogs",
+          "awslogs-region": "eu-central-1",
+          "awslogs-stream-prefix": "letsencrypt-nginx-proxy-companion"
+        }
+      }
     },
     {
-      "name": "chat-server",
-      "image": "katbert/chat-server",
-      "hostname": "nodejs",
-      "essential": false,
-      "memory": 128
+      "name": "war-of-bob",
+      "image": "vfeskov/war-of-bob",
+      "essential": true,
+      "memoryReservation": 256,
+      "environment": [
+        {
+          "name": "VIRTUAL_HOST",
+          "value": "bob.vfeskov.com"
+        },
+        {
+          "name": "LETSENCRYPT_HOST",
+          "value": "bob.vfeskov.com"
+        },
+        {
+          "name": "LETSENCRYPT_EMAIL",
+          "value": "v@vladimirfeskov.com"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/elasticbeanstalk/main/dockerlogs",
+          "awslogs-region": "eu-central-1",
+          "awslogs-stream-prefix": "war-of-bob"
+        }
+      }
     }
   ]
 }
