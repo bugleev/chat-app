@@ -155,6 +155,7 @@ exports.sendBotResponse = async function(message, room, socket) {
       });
     }
   } catch (error) {
+    console.log("error:", error);
     socket.emit("error", error);
   }
 };
