@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const { Transform } = require("stream");
 const request = require("request");
 const serverPath = require("../util/path");
 const Room = require("../models/room");
@@ -125,13 +124,36 @@ exports.sendBotResponse = async function(message, room, socket) {
   try {
     const botResponse = await Bot.checkMessage(message);
     if (!botResponse) return;
-    const response = {
-      text: botResponse,
-      created: Date.now(),
-      room: room,
-      user: "SRVBot"
-    };
-    this.ioServer.to(room).emit("newMessage", response);
+    if (typeof botResponse === "string") {
+      const response = {
+        text: botResponse,
+        created: Date.now(),
+        room: room,
+        user: "SRVBot"
+      };
+      this.ioServer.to(room).emit("newMessage", response);
+    } else {
+      botResponse.listValue.values.forEach(msg => {
+        const {
+          arrival,
+          departure,
+          transport,
+          duration
+        } = msg.structValue.fields;
+        console.log("transport.stringValue:", transport.stringValue);
+        const response = {
+          text: `--- Тип: ${transport.stringValue} --- Отправление:  ${
+            departure.stringValue
+          } --- Прибытие: ${arrival.stringValue} --- В пути: ${
+            duration.stringValue
+          } ---`,
+          created: Date.now(),
+          room: room,
+          user: "SRVBot"
+        };
+        this.ioServer.to(room).emit("newMessage", response);
+      });
+    }
   } catch (error) {
     socket.emit("error", error);
   }

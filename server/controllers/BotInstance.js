@@ -1,8 +1,6 @@
 const dialogflow = require("dialogflow");
 const uuid = require("uuid");
-const fs = require("fs");
-const path = require("path");
-const serverPath = require("../util/path");
+
 class Bot {
   constructor() {
     this.name = "SRVBot";
@@ -32,18 +30,22 @@ class Bot {
     this.sessionPath = this.sessionClient.sessionPath(projectId, sessionId);
 
     // read yandex data from file
-    fs.readFile(
-      path.join(serverPath, process.env.UPLOADS_DIR, "yandex"),
-      "utf8",
-      (err, data) => {
-        if (err) {
-          console.log(err);
-        } else {
-          const obj = JSON.parse(data);
-          this.data = obj;
-        }
-      }
-    );
+    // if (
+    //   fs.existsSync(path.join(serverPath, process.env.UPLOADS_DIR, "yandex"))
+    // ) {
+    //   fs.readFile(
+    //     path.join(serverPath, process.env.UPLOADS_DIR, "yandex"),
+    //     "utf8",
+    //     (err, data) => {
+    //       if (err) {
+    //         console.log(err);
+    //       } else {
+    //         const obj = JSON.parse(data);
+    //         this.data = obj;
+    //       }
+    //     }
+    //   );
+    // }
   }
   async reachAPI() {
     // The text query request.
@@ -61,21 +63,9 @@ class Bot {
     // Send request and log result
     const responses = await this.sessionClient.detectIntent(request);
     const result = responses[0].queryResult;
-    if (result.allRequiredParamsPresent) {
-      if (this.data) {
-        let fromCode = this.data.find(
-          el => el.value === result.parameters.fields.from.stringValue
-        ).code;
-        let toCode = this.data.find(
-          el => el.value === result.parameters.fields.to.stringValue
-        ).code;
-        let date = new Date(
-          result.parameters.fields.date.stringValue
-        ).toISOString();
-        let yandexURL = `https://api.rasp.yandex.net/v3.0/search/?apikey=ebf316c3-0577-46c4-93b3-cd3ef3e5feea&format=json&from=${fromCode}&to=${toCode}&lang=ru_RU&page=1&date=${date}
-        `;
-        return yandexURL;
-      }
+    console.log("result:", result);
+    if (result.webhookPayload) {
+      return result.webhookPayload.fields.webChat.structValue.fields.messages;
     }
     console.log(`  Query: ${result.queryText}`);
     console.log(`  Response: ${result.fulfillmentText}`);
