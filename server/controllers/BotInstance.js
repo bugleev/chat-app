@@ -24,7 +24,10 @@ class Bot {
   initConnection(projectId = "buybot-65701") {
     // A unique identifier for the given session
     const sessionId = uuid.v4();
-    const privateKey = process.env.GOOGLE_SERVICE_KEY;
+    const privateKey = process.env.GOOGLE_SERVICE_KEY.replace(
+      new RegExp("\\\\n", "g"),
+      "\n"
+    );
     const privateEmail = process.env.GOOGLE_EMAIL;
     let config = {
       credentials: {
