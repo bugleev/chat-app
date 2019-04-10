@@ -16,7 +16,7 @@ services:
       context: ./server
     environment: 
       NODE_ENV: production
-      PORT: 5555    
+      PORT: 5555     
       CLEAN_UPLOADS_DAYS: 10
       UPLOADS_DIR: uploads   
     restart: always   

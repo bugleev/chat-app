@@ -223,7 +223,6 @@ class SocketIOState {
   @action
   subscribe = () => {
     this.socket.on("newMessage", data => {
-      console.log("data:", data);
       this.logMessageFromUser(data);
     });
     this.socket.on("populateMessagesFromDB", ({ messages }) => {

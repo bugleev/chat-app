@@ -16,7 +16,6 @@ class Bot {
   }
   extractText(msg) {
     this.text = msg.replace(/@\w+,/i, "").trim();
-    console.log("text:", this.text);
   }
   loadDataFromServer(data) {
     if (this.data) return;
@@ -25,8 +24,16 @@ class Bot {
   initConnection(projectId = "buybot-65701") {
     // A unique identifier for the given session
     const sessionId = uuid.v4();
+    const privateKey = process.env.GOOGLE_SERVICE_KEY;
+    const privateEmail = process.env.GOOGLE_EMAIL;
+    let config = {
+      credentials: {
+        private_key: privateKey,
+        client_email: privateEmail
+      }
+    };
     // Create a new session
-    this.sessionClient = new dialogflow.SessionsClient();
+    this.sessionClient = new dialogflow.SessionsClient(config);
     this.sessionPath = this.sessionClient.sessionPath(projectId, sessionId);
 
     // read yandex data from file
@@ -63,7 +70,6 @@ class Bot {
     // Send request and log result
     const responses = await this.sessionClient.detectIntent(request);
     const result = responses[0].queryResult;
-    console.log("result:", result);
     if (result.webhookPayload) {
       return result.webhookPayload.fields.webChat.structValue.fields.messages;
     }

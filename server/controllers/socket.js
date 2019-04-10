@@ -140,7 +140,6 @@ exports.sendBotResponse = async function(message, room, socket) {
           transport,
           duration
         } = msg.structValue.fields;
-        console.log("transport.stringValue:", transport.stringValue);
         const response = {
           text: `--- Тип: ${transport.stringValue} --- Отправление:  ${
             departure.stringValue
@@ -226,8 +225,6 @@ exports.downloadYandex = function(socket) {
           console.log(e);
         }
       );
-    }).on("close", function() {
-      console.log("downloaded");
     });
   } catch (error) {
     socket.emit("error", error);
