@@ -5,7 +5,7 @@ const serverPath = require("../util/path");
 const Room = require("../models/room");
 const Message = require("../models/message");
 const userList = require("./UserList");
-const Bot = require("./BotInstance");
+// const Bot = require("./BotInstance");
 
 const isOlderThan = (created, interval) =>
   Date.now() - new Date(created).getTime() > 1000 * 60 * 60 * 24 * interval;
@@ -115,14 +115,15 @@ exports.messageHandler = async function(socket, request) {
       .to(request.room)
       .emit("newMessage", { user: username, ...request });
     message.save();
-    this.sendBotResponse(request.text, request.room, socket);
+    // this.sendBotResponse(request.text, request.room, socket);
   } catch (error) {
     socket.emit("error", error);
   }
 };
 exports.sendBotResponse = async function(message, room, socket) {
   try {
-    const botResponse = await Bot.checkMessage(message);
+    //  = await Bot.checkMessage(message);
+    const botResponse = "";
     if (!botResponse) return;
     if (typeof botResponse === "string") {
       const response = {
@@ -216,7 +217,7 @@ exports.downloadYandex = function(socket) {
           });
         });
       });
-      Bot.loadDataFromServer(data);
+      // Bot.loadDataFromServer(data);
       fs.writeFile(
         path.join(serverPath, process.env.UPLOADS_DIR, "yandex"),
         JSON.stringify(data),
