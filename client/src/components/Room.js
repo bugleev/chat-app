@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { socketState } from "../appState";
+import { socketState, authState } from "../appState";
 import chatStyles from "../styles/Chat.module.sass";
 import UserList from "./UserList";
 import { getUsernameColor } from "../utils/getUsernameColor";
@@ -11,16 +11,17 @@ class Room extends Component {
   componentDidMount() {
     const chatNode = this.chatList.current;
     chatNode.addEventListener("scroll", this.fetchMessagesOnscroll);
-    document
-      .getElementById("chat-input")
-      .addEventListener("keyup", this.submitOnEnter);
+    const textInput = document.getElementById("chat-input");
+    textInput.addEventListener("keypress", this.submitOnEnter);
+    textInput.addEventListener("keyup", this.loadLastMessage);
   }
   componentWillUnMount() {
     const chatNode = this.chatList.current;
     chatNode.removeEventListener("scroll", this.fetchMessagesOnscroll);
     document
       .getElementById("chat-input")
-      .removeEventListener("keyup", this.submitOnEnter);
+      .removeEventListener("keypress", this.submitOnEnter)
+      .removeEventListener("keyup", this.loadLastMessage);
   }
   getSnapshotBeforeUpdate() {
     const { scrollHeight, scrollTop, clientHeight } = this.chatList.current;
@@ -57,19 +58,31 @@ class Room extends Component {
       }
     }
   };
-  submitOnEnter = event => {
+  submitOnEnter = e => {
     socketState.updateTypingEvent();
-    if (event.which === 13 && !event.target.value.trim()) {
-      event.preventDefault();
+    if (e.which === 13 && !e.target.value.trim()) {
+      e.preventDefault();
       return;
     }
-    if (event.which === 13 && !event.shiftKey) {
-      event.target.form.dispatchEvent(
-        new Event("submit", { cancelable: true })
-      );
-      event.preventDefault();
-      event.target.value = "";
+    if (e.which === 13 && !e.shiftKey) {
+      e.preventDefault();
+      e.target.form.dispatchEvent(new Event("submit", { cancelable: true }));
+      e.target.value = "";
     }
+  };
+  loadLastMessage = e => {
+    if (e.which === 38 && !e.shiftKey) {
+      e.preventDefault();
+      const reversed = socketState.roomMessages.reverse();
+      const lastMessage = reversed.find(el => el.user === authState.username)
+        .text;
+      e.target.value = lastMessage;
+    }
+  };
+  selectUserToMessage = name => {
+    const textarea = document.getElementById("chat-input");
+    textarea.value = `@${name}, `;
+    textarea.focus();
   };
   submitForm = e => {
     e.preventDefault();
@@ -95,12 +108,13 @@ class Room extends Component {
                 key={`${el.user}_${i}`}
               >
                 <span className={chatStyles.timeStamp}>{el.timeStamp}</span>
-                <span
+                <button
                   className={chatStyles.userName}
                   style={{ color: getUsernameColor(el.user) }}
+                  onClick={() => this.selectUserToMessage(el.user)}
                 >
                   {el.user}
-                </span>
+                </button>
                 <span style={{ marginRight: 5 }}>:</span>
                 {!el.isFile ? (
                   <span className={chatStyles.message}>{el.text}</span>
@@ -118,7 +132,7 @@ class Room extends Component {
             )
           )}
         </div>
-        <UserList />
+        <UserList selectUser={this.selectUserToMessage} />
         <div className={chatStyles.chatInputBox}>
           <form action="POST" onSubmit={this.submitForm}>
             <div>

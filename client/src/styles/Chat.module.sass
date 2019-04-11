@@ -408,12 +408,19 @@ form
       font-size: 1.4rem
       overflow-x: hidden
       text-overflow: ellipsis
+      display: flex
+      justify-content: space-between
+      align-items: center
       +mq(phone-wide, max)
         width: 100%
         text-align: center
     li.typing 
       white-space: nowrap
       background: #f3f9a763           
+    li:hover
+      font-weight: bold
+      cursor: pointer
+      background-color: darken(#f3f9a763, 15%)        
 .chatInputBox      
   div 
     width: 100%

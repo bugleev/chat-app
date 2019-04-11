@@ -69,6 +69,8 @@ exports.startServer = done => {
       // start cron job for clearing uploads folder
       require("../util/cleanup").start();
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      throw new Error(err);
+    });
   done();
 };

@@ -31,7 +31,7 @@ const insertDatesInMessages = messages => {
   return messages;
 };
 
-const DEFAULT_ROOM = "Main";
+const DEFAULT_ROOM = "General";
 const TYPING_TIMER_LENGTH = 400;
 const MESSAGES_LIMIT = 20;
 
@@ -146,7 +146,8 @@ class SocketIOState {
   @action
   updateUserList = list => {
     this.userList = list.map(el => ({
-      name: el,
+      name: el.name,
+      role: el.role,
       typing: false
     }));
   };
@@ -177,6 +178,9 @@ class SocketIOState {
         }
       }, TYPING_TIMER_LENGTH);
     }
+  };
+  downloadYandex = () => {
+    this.socket.emit("yandex");
   };
   @action
   handleFileUpload = e => {

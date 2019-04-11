@@ -1,9 +1,11 @@
 const fs = require("fs");
 const path = require("path");
+const request = require("request");
 const serverPath = require("../util/path");
 const Room = require("../models/room");
 const Message = require("../models/message");
 const userList = require("./UserList");
+const Bot = require("./BotInstance");
 
 const isOlderThan = (created, interval) =>
   Date.now() - new Date(created).getTime() > 1000 * 60 * 60 * 24 * interval;
@@ -113,10 +115,50 @@ exports.messageHandler = async function(socket, request) {
       .to(request.room)
       .emit("newMessage", { user: username, ...request });
     message.save();
+    this.sendBotResponse(request.text, request.room, socket);
   } catch (error) {
     socket.emit("error", error);
   }
 };
+exports.sendBotResponse = async function(message, room, socket) {
+  try {
+    const botResponse = await Bot.checkMessage(message);
+    if (!botResponse) return;
+    if (typeof botResponse === "string") {
+      const response = {
+        text: botResponse,
+        created: Date.now(),
+        room: room,
+        user: "SRVBot"
+      };
+      this.ioServer.to(room).emit("newMessage", response);
+    } else {
+      botResponse.listValue.values.forEach(msg => {
+        const {
+          arrival,
+          departure,
+          transport,
+          duration
+        } = msg.structValue.fields;
+        const response = {
+          text: `--- Тип: ${transport.stringValue} --- Отправление:  ${
+            departure.stringValue
+          } --- Прибытие: ${arrival.stringValue} --- В пути: ${
+            duration.stringValue
+          } ---`,
+          created: Date.now(),
+          room: room,
+          user: "SRVBot"
+        };
+        this.ioServer.to(room).emit("newMessage", response);
+      });
+    }
+  } catch (error) {
+    console.log("error:", error);
+    socket.emit("error", error);
+  }
+};
+
 exports.uploadFileMessage = function(socket, request, file, cb) {
   try {
     if (!request.filename) throw new Error("No file provided!");
@@ -154,7 +196,40 @@ exports.uploadFileMessage = function(socket, request, file, cb) {
     socket.emit("error", error);
   }
 };
-
+exports.downloadYandex = function(socket) {
+  try {
+    var options = {
+      url:
+        "https://api.rasp.yandex.net/v3.0/stations_list/?apikey=ebf316c3-0577-46c4-93b3-cd3ef3e5feea&lang=ru_RU&format=json",
+      method: "GET",
+      accept: "application/json"
+    };
+    request(options, (err, httpResponse, body) => {
+      const data = [];
+      JSON.parse(body).countries.forEach(co => {
+        co.regions.forEach(el => {
+          el.settlements.forEach(st => {
+            if (st.title) {
+              const str = st.title.replace(/[[\]{}()*+?.,\\^$|#]/g, " ").trim();
+              data.push({ value: str, code: st.codes.yandex_code });
+            }
+          });
+        });
+      });
+      Bot.loadDataFromServer(data);
+      fs.writeFile(
+        path.join(serverPath, process.env.UPLOADS_DIR, "yandex"),
+        JSON.stringify(data),
+        "utf8",
+        e => {
+          console.log(e);
+        }
+      );
+    });
+  } catch (error) {
+    socket.emit("error", error);
+  }
+};
 exports.downloadFile = (req, res, next) => {
   const { link } = req.params;
   var filePath = path.join(serverPath, process.env.UPLOADS_DIR, link);
@@ -186,17 +261,22 @@ exports.populateMessages = async function(socket, { limit, skip, room }) {
  */
   const formattedMessages = messages
     .sort((a, b) => a.created - b.created)
-    .map(el => ({
-      user: el.author.username,
-      text: el.isFile
-        ? isOlderThan(el.created, process.env.CLEAN_UPLOADS_DAYS)
-          ? "link expired"
-          : el.text
-        : el.text,
-      created: el.created,
-      isFile: !!el.isFile,
-      fileLink: el.fileLink
-    }));
+    .map(el =>
+      el.author
+        ? {
+            user: el.author.username,
+            text: el.isFile
+              ? isOlderThan(el.created, process.env.CLEAN_UPLOADS_DAYS)
+                ? "link expired"
+                : el.text
+              : el.text,
+            created: el.created,
+            isFile: !!el.isFile,
+            fileLink: el.fileLink
+          }
+        : undefined
+    )
+    .filter(Boolean);
   socket.emit("populateMessagesFromDB", { messages: formattedMessages });
 };
 exports.typingHandler = function(socket) {
