@@ -4160,6 +4160,11 @@ path-type@^2.0.0:
   dependencies:
     pify "^2.0.0"
 
+pb-util@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/pb-util/-/pb-util-0.1.0.tgz#3e2637426f8f5b8b2c967742e3ee5a6471ea0386"
+  integrity sha512-NAQjIkNf84j9LF9RJviFiTc/43y1VuVg7CCEYduTAJvkmkR2vnwY1qd2b3eGWxRDVJ6yPybl06hdCy3+WnygNw==
+
 performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"

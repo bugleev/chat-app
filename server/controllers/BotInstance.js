@@ -1,5 +1,6 @@
 const dialogflow = require("dialogflow");
 const uuid = require("uuid");
+const { struct } = require("pb-util");
 
 class Bot {
   constructor() {
@@ -74,7 +75,7 @@ class Bot {
     const responses = await this.sessionClient.detectIntent(request);
     const result = responses[0].queryResult;
     if (result.webhookPayload) {
-      return result.webhookPayload.fields.webChat.structValue.fields.messages;
+      return struct.decode(result.webhookPayload).webChat.messages;
     }
     console.log(`  Query: ${result.queryText}`);
     console.log(`  Response: ${result.fulfillmentText}`);

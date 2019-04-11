@@ -133,19 +133,18 @@ exports.sendBotResponse = async function(message, room, socket) {
       };
       this.ioServer.to(room).emit("newMessage", response);
     } else {
-      botResponse.listValue.values.forEach(msg => {
-        const {
-          arrival,
-          departure,
-          transport,
-          duration
-        } = msg.structValue.fields;
+      if (botResponse[0].pages) {
         const response = {
-          text: `--- Тип: ${transport.stringValue} --- Отправление:  ${
-            departure.stringValue
-          } --- Прибытие: ${arrival.stringValue} --- В пути: ${
-            duration.stringValue
-          } ---`,
+          text: `--- ${botResponse[0].pages} ---`,
+          created: Date.now(),
+          room: room,
+          user: "SRVBot"
+        };
+        this.ioServer.to(room).emit("newMessage", response);
+      }
+      botResponse.forEach(({ text }) => {
+        const response = {
+          text,
           created: Date.now(),
           room: room,
           user: "SRVBot"
