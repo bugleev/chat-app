@@ -15,7 +15,7 @@ deploy:
   provider: elasticbeanstalk
   region: eu-north-1
   app: bugleev-chat
-  env: fmlife-env
+  env: fmlifee-env
   bucket_name: elasticbeanstalk-eu-north-1-263451985759
   bucket_path: buybots-chat
   on:
